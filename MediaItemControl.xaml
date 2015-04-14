@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="RAPPTest.MediaItemControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             mc:Ignorable="d" 
+             d:DesignHeight="230" d:DesignWidth="250"
+             MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
+             SizeChanged="UserControl_SizeChanged"
+             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+             Margin="0,0,0,0">
+    <UserControl.Resources>
+        <DataTemplate x:Key="ImageGalleryDataTemplate">
+            <Grid>
+                <Border BorderBrush="Transparent" BorderThickness="3"  Width="120" Height="120" Padding="10" Margin="15" CornerRadius="10">
+                    <!--Bind Image Path in Image Control-->
+                    <Image Source="{Binding ImagePath}" Stretch="Fill"  HorizontalAlignment="Center">
+                        <!--View Large Image on Image Control Tooltip-->
+                        <Image.ToolTip>
+                            <Grid>
+                                <Image Source="{Binding ImagePath}" Stretch="Fill" HorizontalAlignment="Center" Height="200" Width="200"></Image>
+                            </Grid>
+                        </Image.ToolTip>
+
+                    </Image>
+
+                </Border>
+            </Grid>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="ImageGalleryItemsPanelTemplate">
+            <!--Display Images on UniformGrid Panel-->
+            <UniformGrid Columns="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+        </ItemsPanelTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Drag file into the green area."></TextBlock>
+        <ListBox Grid.Row="1" x:Name="ContentRoot" FlowDirection="LeftToRight" 
+          Background="GreenYellow"
+          telerik:RadDragAndDropManager.AllowDrop="True"
+          telerik:RadDragAndDropManager.DropQuery="OnDropQuery"
+          telerik:RadDragAndDropManager.DropInfo="OnDropInfo" Visibility="Hidden">
+        </ListBox>
+        <ListBox Grid.Row="1" x:Name="LsImageGallery"  ItemsSource="{Binding}" 
+                 ItemTemplate="{DynamicResource ImageGalleryDataTemplate}" 
+                 ItemsPanel="{DynamicResource ImageGalleryItemsPanelTemplate}"
+                 telerik:RadDragAndDropManager.AllowDrop="True"
+                 telerik:RadDragAndDropManager.DropQuery="OnDropQuery"
+                 telerik:RadDragAndDropManager.DropInfo="OnDropInfo">
+            <ListBox.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="#FF1E2A2F" Offset="1"/>
+                </LinearGradientBrush>
+            </ListBox.Background>
+        </ListBox>
+        <!--<Grid Grid.Row="1" x:Name="ContentRoot"
+          Background="GreenYellow"
+          telerik:RadDragAndDropManager.AllowDrop="True"
+          telerik:RadDragAndDropManager.DropQuery="OnDropQuery"
+          telerik:RadDragAndDropManager.DropInfo="OnDropInfo">
+        </Grid>-->
+      
+    </Grid>
+</UserControl>
