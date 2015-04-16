@@ -42,16 +42,12 @@
         <TextBlock Text="Drag file into the green area."></TextBlock>
         <ListBox Grid.Row="1" x:Name="ContentRoot" FlowDirection="LeftToRight" 
           Background="GreenYellow"
-          telerik:RadDragAndDropManager.AllowDrop="True"
-          telerik:RadDragAndDropManager.DropQuery="OnDropQuery"
-          telerik:RadDragAndDropManager.DropInfo="OnDropInfo" Visibility="Hidden">
+          telerik:RadDragAndDropManager.AllowDrop="True">
         </ListBox>
         <ListBox Grid.Row="1" x:Name="LsImageGallery"  ItemsSource="{Binding}" 
                  ItemTemplate="{DynamicResource ImageGalleryDataTemplate}" 
                  ItemsPanel="{DynamicResource ImageGalleryItemsPanelTemplate}"
-                 telerik:RadDragAndDropManager.AllowDrop="True"
-                 telerik:RadDragAndDropManager.DropQuery="OnDropQuery"
-                 telerik:RadDragAndDropManager.DropInfo="OnDropInfo">
+                 telerik:RadDragAndDropManager.AllowDrop="True">
             <ListBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>
@@ -59,12 +55,5 @@
                 </LinearGradientBrush>
             </ListBox.Background>
         </ListBox>
-        <!--<Grid Grid.Row="1" x:Name="ContentRoot"
-          Background="GreenYellow"
-          telerik:RadDragAndDropManager.AllowDrop="True"
-          telerik:RadDragAndDropManager.DropQuery="OnDropQuery"
-          telerik:RadDragAndDropManager.DropInfo="OnDropInfo">
-        </Grid>-->
-      
     </Grid>
 </UserControl>

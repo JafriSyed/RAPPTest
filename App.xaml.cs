@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using Telerik.Windows.Controls.DragDrop;
 
 namespace RAPPTest
 {
@@ -12,5 +13,9 @@ namespace RAPPTest
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            //DragAndDropManager.EnableNativeDrag = true;
+        }
     }
 }

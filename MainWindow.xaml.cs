@@ -30,16 +30,16 @@ namespace RAPPTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        int _nextMediaID = 0;
-        Brush _txtInputBorderBrush = null;
+
+        #region Member Variables
+
         private Label _openFolder = null;
         private Button _selectedButton = null;
 
-        private MediaItemControl _scriptMediaItemUC;
-        
-        private List<Label> _folderLabels;
-        private List<Button> _keyButtons;
-        private List<Button> _keyButtonsImport;
+        #endregion
+
+
+        #region Static Variables
 
         //private Manager manager;
         [DllImport("User32.dll")]
@@ -48,6 +48,11 @@ namespace RAPPTest
         private static extern bool GetLastInputInfo(ref LASTINPUTINFO Dummy);
         [DllImport("Kernel32.dll")]
         private static extern uint GetLastError();
+
+        #endregion
+
+
+        #region Constructor
 
         public MainWindow()
         {
@@ -58,7 +63,9 @@ namespace RAPPTest
             expBrowser.NavigationTarget = ShellFileSystemFolder.FromFolderPath("C:\\");
         }
 
+        #endregion
 
+       
         #region Private Methods
 
         private void LoadScreenSaverControl()
@@ -91,7 +98,6 @@ namespace RAPPTest
 
             return LastUserAction.dwTime;
         }
-
 
         private void StartTimer()
         {
@@ -160,11 +166,20 @@ namespace RAPPTest
                 }
 
                 gridButtonLowerImport.Children.Add(btn);
+
                 startLabel++;
             }
-
         }
 
+
+        private void GetMediaFolderID(int folderNum, string folderName)
+        {
+            IEnumerable<Folder> folder = MediaView.GetFolderId(folderNum, folderName);
+            foreach (var f in folder)
+            {
+                lblMediaFolderId.Content = f.MediaFolderId;            
+            }
+        }
 
         #endregion
 
@@ -177,7 +192,6 @@ namespace RAPPTest
             w.Show();
         }
 
-
         #endregion
 
 
@@ -187,6 +201,9 @@ namespace RAPPTest
         {
             StartTimer();
             _openFolder = this.folder1;
+            GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
+            MediaImportControl ic = new MediaImportControl();
+            ic.BindImages((Guid)lblMediaFolderId.Content);
         }
 
 
@@ -207,11 +224,6 @@ namespace RAPPTest
 
         }
 
-        /// <summary>
-        /// Hide border of textbox when mouse over
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void textBorder_MouseLeave(object sender, MouseEventArgs e)
         {
 
@@ -219,14 +231,9 @@ namespace RAPPTest
 
         private void ImagebucketTab_MouseUp(object sender, MouseButtonEventArgs e)
         {
-
+           
         }
 
-        /// <summary>
-        /// Handler for click event of all buttons on the bottom panel
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -239,6 +246,9 @@ namespace RAPPTest
                 _selectedButton.ClearValue(Button.BackgroundProperty);
                 _selectedButton.ClearValue(Button.ForegroundProperty);
                 _selectedButton = btn;
+                GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
+                MediaImportControl ic = new MediaImportControl();
+                ic.BindImages((Guid)lblMediaFolderId.Content);
             }
         }
 
@@ -247,17 +257,11 @@ namespace RAPPTest
 
         }
 
-
         private void iconZoomOut_MouseUp(object sender, MouseButtonEventArgs e)
         {
 
         }
 
-        /// <summary>
-        /// Handler for click event of slider zoomIn
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void iconZoomIn_MouseUp(object sender, MouseButtonEventArgs e)
         {
 
@@ -271,16 +275,17 @@ namespace RAPPTest
             {
                 if (clickedFolder != _openFolder)
                 {
-
                     clickedFolder.Background = this.FindResource("openFolderIcon") as ImageBrush;
                     clickedFolder.Foreground = Brushes.Yellow;
                     _openFolder.Background = this.FindResource("closedFolderIcon") as ImageBrush;
                     _openFolder.Foreground = this.FindResource("Purple") as SolidColorBrush;
                     _openFolder = clickedFolder;
                 }
+                GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
+                MediaImportControl ic = new MediaImportControl();
+                ic.BindImages((Guid)lblMediaFolderId.Content);
             }
         }
-
 
         private void folder_Drop(object sender, DragEventArgs e)
         {
@@ -296,7 +301,6 @@ namespace RAPPTest
         {
 
         }
-
 
         private void middleTextBox_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -321,7 +325,6 @@ namespace RAPPTest
         private void iconZoomOutImport_MouseUp(object sender, MouseButtonEventArgs e)
         {
 
-
         }
 
         private void theSliderImport_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -331,7 +334,6 @@ namespace RAPPTest
 
         private void iconZoomInImport_MouseUp(object sender, MouseButtonEventArgs e)
         {
-
 
         }
 
@@ -350,81 +352,25 @@ namespace RAPPTest
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
 
-
         }
 
-
-        // all of the code below are not in use! //by Siwei
         private void fullScreenButton_Click(object sender, RoutedEventArgs e)
         {
-
-            // Create new window, that window will have a view box, and its content will be whatever the selected item is, just read in the actual image
-
             WPFWindow w = new WPFWindow();
             w.Show();
-
         }
 
         #endregion
 
 
+        #region Struct
+       
         internal struct LASTINPUTINFO
         {
             public uint cbSize;
             public uint dwTime;
         }
 
-        public class WPFWindow : Window
-        {
-            private bool _inStateChange;
-
-            public WPFWindow()
-            {
-                //SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
-                SolidColorBrush brush = new SolidColorBrush(Colors.Black);
-
-                Canvas canvas = new Canvas();
-                canvas.Width = this.Width;
-                canvas.Height = this.Height;
-                canvas.Background = brush;
-
-                this.AllowsTransparency = true;
-                this.WindowStyle = WindowStyle.None;
-                this.Background = brush;
-                this.Topmost = true;
-
-                this.Width = 400;
-                this.Height = 300;
-                this.Content = canvas;
-            }
-
-
-
-            private void Window_KeyDown(object sender, KeyEventArgs e)
-            {
-                if (e.Key == System.Windows.Input.Key.F11)
-                {
-                    WindowStyle = WindowStyle.None;
-                    WindowState = WindowState.Maximized;
-                    ResizeMode = ResizeMode.NoResize;
-                }
-            }
-
-
-            protected override void OnStateChanged(EventArgs e)
-            {
-                if (WindowState == WindowState.Maximized && !_inStateChange)
-                {
-                    _inStateChange = true;
-                    WindowState = WindowState.Normal;
-                    WindowStyle = WindowStyle.None;
-                    WindowState = WindowState.Maximized;
-                    ResizeMode = ResizeMode.NoResize;
-                    _inStateChange = false;
-                }
-                base.OnStateChanged(e);
-            }
-
-        }
+        #endregion
     }
 }

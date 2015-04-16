@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="RappTestModelStoreContainer" CdmEntityContainer="RappTestEntities">
+    <EntitySetMapping Name="Media">
+      <EntityTypeMapping TypeName="RappTestModel.Medium">
+        <MappingFragment StoreEntitySet="Media">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsScreenSaver" ColumnName="IsScreenSaver" />
+          <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+          <ScalarProperty Name="Notes" ColumnName="Notes" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="FileName" ColumnName="FileName" />
+          <ScalarProperty Name="MediaFolderId" ColumnName="MediaFolderId" />
+          <ScalarProperty Name="MediaId" ColumnName="MediaId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="MediaFolders">
+      <EntityTypeMapping TypeName="RappTestModel.MediaFolder">
+        <MappingFragment StoreEntitySet="MediaFolder">
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="FolderName" ColumnName="FolderName" />
+          <ScalarProperty Name="FolderNum" ColumnName="FolderNum" />
+          <ScalarProperty Name="MediaFolderId" ColumnName="MediaFolderId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="RappTestModel.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+  <EntityContainer Name="RappTestModelStoreContainer">
+    <EntitySet Name="Media" EntityType="RappTestModel.Store.Media" store:Type="Tables" />
+    <EntitySet Name="MediaFolder" EntityType="RappTestModel.Store.MediaFolder" store:Type="Tables" />
+  </EntityContainer>
+  <EntityType Name="Media">
+    <Key>
+      <PropertyRef Name="MediaId" />
+    </Key>
+    <Property Name="MediaId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="MediaFolderId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FileName" Type="nvarchar" MaxLength="100" />
+    <Property Name="Title" Type="nvarchar" MaxLength="100" />
+    <Property Name="Description" Type="nvarchar" MaxLength="2000" />
+    <Property Name="Notes" Type="nvarchar" MaxLength="2000" />
+    <Property Name="Sequence" Type="int" />
+    <Property Name="IsScreenSaver" Type="bit" />
+    <Property Name="IsDeleted" Type="bit" />
+  </EntityType>
+  <EntityType Name="MediaFolder">
+    <Key>
+      <PropertyRef Name="MediaFolderId" />
+    </Key>
+    <Property Name="MediaFolderId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FolderNum" Type="int" />
+    <Property Name="FolderName" Type="nvarchar" MaxLength="10" />
+    <Property Name="Title" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+</Schema>

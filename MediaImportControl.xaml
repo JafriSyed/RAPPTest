@@ -6,39 +6,74 @@
              xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Loaded="UserControl_Loaded"
              SizeChanged="UserControl_SizeChanged" xmlns:my="clr-namespace:RAPPTest">
 
-    <UserControl.Resources>
+    <!--<UserControl.Resources>
         <DataTemplate x:Key="ImageGalleryDataTemplate">
             <Grid>
-                <!--Bind Image Path in Image Control-->
-                <Image Source="{Binding ImagePath}" Stretch="Fill"  HorizontalAlignment="Center">
-                    <!--View Large Image on Image Control Tooltip-->
-                    <Image.ToolTip>
-                        <Grid>
-                            <Image Source="{Binding ImagePath}" Stretch="Fill" HorizontalAlignment="Center" Height="200" Width="200"></Image>
-                        </Grid>
-                    </Image.ToolTip>
+                <Image Source="{Binding FileName}" Stretch="Fill"  HorizontalAlignment="Center" Height="150" Width="150">
                 </Image>
+                <Label Content="{Binding Sequence}" HorizontalAlignment="Center" FontSize="10"></Label>
             </Grid>
         </DataTemplate>
         <ItemsPanelTemplate x:Key="ImageGalleryItemsPanelTemplate">
-            <!--Display Images on UniformGrid Panel-->
-            <UniformGrid Columns="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+            <UniformGrid HorizontalAlignment="Center"/>
         </ItemsPanelTemplate>
-    </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Name="dndSrollbar" >
+    </UserControl.Resources>-->
+    <ScrollViewer VerticalScrollBarVisibility="Auto"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Name="dndSrollbar" >
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <ListBox Grid.Row="1" x:Name="lstImageGallery"  ItemsSource="{Binding}" 
+            <!--<ListBox Grid.Row="1" x:Name="lstImageGallery"  ItemsSource="{Binding}"
+                 ItemTemplate="{DynamicResource ImageGalleryDataTemplate}" 
+                 ItemsPanel="{DynamicResource ImageGalleryItemsPanelTemplate}"
                  telerik:RadDragAndDropManager.AllowDrop="True"
                  telerik:RadDragAndDropManager.DropQuery="OnDropQuery"
                  telerik:RadDragAndDropManager.DropInfo="OnDropInfo" BorderThickness="0" Background="Transparent">
+            </ListBox>-->
+            <ListBox x:Name="lstImageGallery" Background="Transparent" ItemsSource="{Binding}"
+				 AllowDrop="True"
+                 BorderThickness="0"
+                 Margin="0,0,0,41" Grid.RowSpan="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Image Grid.Row="0" HorizontalAlignment="Center"
+							   Source="{Binding FileName}" Width="100" Height="100"
+							   Margin="0 0 5 0" />
+
+                            <TextBlock Text="{Binding Sequence}" Foreground="#FF767676" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Foreground" Value="#000000" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="telerik:DragDropManager.AllowDrag" Value="True" />
+                        <Setter Property="telerik:DragDropManager.AllowCapturedDrag" Value="True" />
+                        <Setter Property="telerik:DragDropManager.TouchDragTrigger" Value="TapAndHold"/>   
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <telerik:RadUniformGrid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <telerik:ListBoxDragDrop.Behavior>
+                    <telerik:ListBoxDragDropBehavior />
+                </telerik:ListBoxDragDrop.Behavior>
+                <!--<telerik:ListBoxDragDrop.DragVisualProvider>
+                    <local:DragVisualProvider DraggedItemTemplate="{StaticResource ApplicationDragTemplate}"/>
+                </telerik:ListBoxDragDrop.DragVisualProvider>-->
             </ListBox>
         </Grid>
     </ScrollViewer>

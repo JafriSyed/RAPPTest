@@ -19,6 +19,8 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using Telerik.Windows.Controls.DragDrop;
+using System.ComponentModel;
 
 
 namespace RAPPTest
@@ -33,10 +35,13 @@ namespace RAPPTest
         public MediaImportControl()
         {
             InitializeComponent();
-
         }
 
-        
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            MainWindow window = (MainWindow)Application.Current.MainWindow;
+            BindImages((Guid)window.lblMediaFolderId.Content);
+        }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -51,7 +56,35 @@ namespace RAPPTest
 
         private void OnDropInfo(object sender, Telerik.Windows.Controls.DragDrop.DragDropEventArgs e)
         {
+            if (e.Options.Status == DragStatus.DropComplete)
+            {
+                MainWindow window = (MainWindow)Application.Current.MainWindow;
+                RappTestEntities mediaEntity = new RappTestEntities();
+                List<Media> lstMedia = new List<Media>();
+                Guid mediaFolderId = (Guid)window.lblMediaFolderId.Content;
+                var fileList = e.Options.DropDataObject.GetFileDropList();
+                var query = from m in
+                                mediaEntity.Media
+                            where m.MediaFolderId == mediaFolderId
+                            select m.Sequence;
+                int lastSequence = 0;
+                if (query.Count() > 0)
+                    lastSequence = Convert.ToInt32(query.Max());
 
+                foreach (var file in fileList)
+                {
+                    var fileName = file.ToString();
+                    Media m = new Media();
+                    m.Sequence = lastSequence + 1;
+                    m.FileName = file.ToString();
+                    m.IsDeleted = false;
+                    m.IsScreenSaver = false;
+                    m.MediaFolderId = mediaFolderId;
+                    lstMedia.Add(m);
+                }
+                MediaView.InsertImages(lstMedia);
+                BindImages(mediaFolderId);
+            }
         }
 
         private void theGrid_DragLeave(object sender, DragEventArgs e)
@@ -74,39 +107,45 @@ namespace RAPPTest
                 {
                     mediaItemUC = e.Data.GetData(mediaItemUC.GetType()) as MediaItemControl;
                 }
-
-                //if (draggedItemAdornerLayer != null)
-                //{
-                //    Point p = e.GetPosition(this.dndSrollbar);
-                //    draggedItemAdorner.UpdatePosition(p.X, p.Y);
-                //    if ((p.Y + draggedItemAdorner.ActualHeight) >= this.dndSrollbar.ActualHeight)
-                //    {
-                //        this.dndSrollbar.ScrollToVerticalOffset(this.dndSrollbar.VerticalOffset + 5);
-                //    }
-                //    if (p.Y <= 10)
-                //    {
-                //        this.dndSrollbar.ScrollToVerticalOffset(this.dndSrollbar.VerticalOffset - 5);
-                //    }
-                //}
             }
 
         }
 
-        /// <summary>
-        /// Handler to capture drag enter event on this panel which is called when a mediaitem is started to drag on this panel.
-        /// </summary>
         private void theGrid_DragEnter(object sender, DragEventArgs e)
         {
            
         }
 
-        /// <summary>
-        /// Handler for drop event on this panel which is called when a mediaitem is dragged and dropped on this panel.
-        /// </summary>
         private void theGrid_Drop(object sender, DragEventArgs e)
         {
            
             
         }
+
+        public void BindImages(Guid mediaFolderId)
+        {
+            try
+            {
+                ObservableCollection<Media> mediaObj = MediaView.GetAllMediaData(mediaFolderId);
+                //List<Media> lstMediaObj = MediaView.GetAllMediaData(mediaFolderId);
+                if (mediaObj.Count() > 0)
+                {
+                    lstImageGallery.DataContext = mediaObj;
+                    //lstImageGallery.Visibility = Visibility.Visible;
+                }
+                //else
+                    //lstImageGallery.Visibility = Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        private void lstImageGallery_DragDropCompleted(object sender, Telerik.Windows.DragDrop.DragDropCompletedEventArgs e)
+        {
+
+        }
+
     }
 }

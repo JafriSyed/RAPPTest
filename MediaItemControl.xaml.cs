@@ -22,15 +22,16 @@ namespace RAPPTest
 {
     public partial class MediaItemControl : UserControl
     {
+        
+
         public MediaItemControl()
         {
             InitializeComponent();
-
         }
 
         private void OnDropQuery(object sender, Telerik.Windows.Controls.DragDrop.DragDropQueryEventArgs e)
         {
-            e.QueryResult = e.Options.DropDataObject != null && e.Options.DropDataObject.ContainsFileDropList();
+           
         }
 
         private void OnDropInfo(object sender, Telerik.Windows.Controls.DragDrop.DragDropEventArgs e)
@@ -45,13 +46,7 @@ namespace RAPPTest
 
         private void UserControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            MediaItemControl mediaItemUC = sender as MediaItemControl;
-            if (mediaItemUC != null)
-            {
-                DataObject dataObj = new DataObject(mediaItemUC.GetType(), mediaItemUC);
-                DragDrop.DoDragDrop(mediaItemUC, dataObj, DragDropEffects.Move);
-            }
-            e.Handled = true;
+           
         }
     }
 }
