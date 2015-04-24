@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace RAPPTest.Utilities
 {
@@ -17,5 +18,21 @@ namespace RAPPTest.Utilities
             }
             return timerList;
         }
+
+        public static string RenameAndMoveFile(string oldFileName)
+        {
+            string newFileName = string.Empty;
+            string ext = Path.GetExtension(oldFileName);
+            string oldFilePath = Path.GetFileNameWithoutExtension(oldFileName);
+            string appDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+            string newFilePathForImageThumbnails =  appDirectory + "\\Images//Thumbnails\\";
+            string newFilePathForImages = appDirectory + "\\Images\\";
+            string newFilePathForVideos = appDirectory + "\\Videos\\";
+            newFileName = DateTime.Now.Ticks.ToString() + ext;
+            File.Copy(oldFileName, newFilePathForImages + newFileName);
+            return newFileName;
+        }
+
+     
     }
 }

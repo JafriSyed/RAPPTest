@@ -110,10 +110,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MediaItemControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Resources\Button.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -122,9 +118,6 @@
   <ItemGroup>
     <Compile Include="MediaImportControl.xaml.cs">
       <DependentUpon>MediaImportControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MediaItemControl.xaml.cs">
-      <DependentUpon>MediaItemControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -181,7 +174,7 @@
     <Resource Include="Images\ZoomOut1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Media\Images\" />
+    <Folder Include="Media\Images\Thumbnails\" />
     <Folder Include="Media\Videos\" />
   </ItemGroup>
   <ItemGroup>

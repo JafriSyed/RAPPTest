@@ -6,11 +6,9 @@ C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\bin\Debug\Mi
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\bin\Debug\Microsoft.WindowsAPICodePack.xml
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
-C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\MediaItemControl.baml
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\Resources\Button.baml
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\MainWindow.g.cs
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\MediaImportControl.g.cs
-C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\MediaItemControl.g.cs
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\App.g.cs
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest_Content.g.cs
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs

@@ -22,7 +22,7 @@
         </ItemsPanelTemplate>
     </UserControl.Resources>-->
     <ScrollViewer VerticalScrollBarVisibility="Auto"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Name="dndSrollbar" >
-        <Grid>
+        <Grid x:Name="theGrid">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -35,17 +35,24 @@
                  telerik:RadDragAndDropManager.DropQuery="OnDropQuery"
                  telerik:RadDragAndDropManager.DropInfo="OnDropInfo" BorderThickness="0" Background="Transparent">
             </ListBox>-->
-            <ListBox x:Name="lstImageGallery" Background="Transparent" ItemsSource="{Binding}"
-				 AllowDrop="True"
+            <ListBox x:Name="lstImageGallery" Background="Transparent"
+                 MouseDoubleClick="lstImageGallery_MouseDoubleClick"
+                 MouseRightButtonUp="lstImageGallery_MouseRightButtonUp"
+                 MouseLeftButtonUp="lstImageGallery_MouseLeftButtonUp"
+                 MouseLeftButtonDown="lstImageGallery_MouseLeftButtonDown"
                  BorderThickness="0"
-                 Margin="0,0,0,41" Grid.RowSpan="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                 Drop="OnDrop"
+                 Margin="0,0,0,10" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <Image Grid.Row="0" HorizontalAlignment="Center"
-							   Source="{Binding FileName}" Width="100" Height="100"
-							   Margin="0 0 5 0" />
-
+                        <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Image Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+							   Width="100"
+							   Margin="0 0 0 0">
+                                <Image.Source>
+                                    <BitmapImage UriSource="{Binding FileName}"  DecodePixelWidth="100" />
+                                </Image.Source>
+                            </Image>
                             <TextBlock Text="{Binding Sequence}" Foreground="#FF767676" HorizontalAlignment="Center" />
                         </StackPanel>
                     </DataTemplate>
@@ -60,7 +67,7 @@
                         <Setter Property="BorderThickness" Value="0" />
                         <Setter Property="telerik:DragDropManager.AllowDrag" Value="True" />
                         <Setter Property="telerik:DragDropManager.AllowCapturedDrag" Value="True" />
-                        <Setter Property="telerik:DragDropManager.TouchDragTrigger" Value="TapAndHold"/>   
+                        <Setter Property="telerik:DragDropManager.TouchDragTrigger" Value="TapAndHold"/>
                     </Style>
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemsPanel>
