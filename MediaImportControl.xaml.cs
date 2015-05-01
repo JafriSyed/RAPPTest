@@ -37,17 +37,12 @@ namespace RAPPTest
         private Media _selectedModel;
 
         private ListBox _associatedObject;
-        private static DispatcherTimer myClickWaitTimer =
-         new DispatcherTimer(
-             new TimeSpan(0, 0, 0, 1),
-             DispatcherPriority.Background,
-             mouseWaitTimer_Tick,
-             Dispatcher.CurrentDispatcher);
+        private static DispatcherTimer myClickWaitTimer = new DispatcherTimer(new TimeSpan(0, 0, 0, 1), DispatcherPriority.Background,
+                                                                              mouseWaitTimer_Tick, Dispatcher.CurrentDispatcher);
 
         public MediaImportControl()
         {
             InitializeComponent();
-            
         }
 
         /// <summary>
@@ -72,22 +67,15 @@ namespace RAPPTest
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            // Binding listbox with image list when import control is loaded.
             MainWindow window = (MainWindow)Application.Current.MainWindow;
             BindImages((Guid)window.lblMediaFolderId.Content);
         }
 
-        private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-           
-        }
-
-        private void OnDropQuery(object sender, Telerik.Windows.Controls.DragDrop.DragDropQueryEventArgs e)
-        {
-            e.QueryResult = e.Options.DropDataObject != null && e.Options.DropDataObject.ContainsFileDropList();
-        }
-
         private void OnDrop(object sender, System.Windows.DragEventArgs e)
         {
+                //adding images to database after dropping them to the grid.
+            
                 MainWindow window = (MainWindow)Application.Current.MainWindow;
                 RappTestEntities mediaEntity = new RappTestEntities();
                 List<Media> lstMedia = new List<Media>();
@@ -118,29 +106,9 @@ namespace RAPPTest
                     MediaView.InsertImages(lstMedia);
                     BindImages(mediaFolderId);
                 }
-                else
-                {
-                    List<Medium> lstMedium = new List<Medium>();
-                    int sequence = 0;
-                    foreach (Media item in lstImageGallery.Items)
-                    {
-                        sequence++;
-                        Medium mItem = new Medium();
-                        mItem.MediaId = item.MediaId;
-                        mItem.Sequence = sequence;
-                        mItem.FileName = item.FileName;
-                        lstMedium.Add(mItem);
-                    }
-                    mv.UpdateSequence(lstMedium);
-                    BindImages(mediaFolderId);
-                }
+
         }
 
-
-        private void OnDropInfo(object sender, Telerik.Windows.Controls.DragDrop.DragDropEventArgs e)
-        {
-           
-        }
 
         private void theGrid_DragLeave(object sender, System.Windows.DragEventArgs e)
         {
@@ -152,23 +120,11 @@ namespace RAPPTest
             e.Handled = true;
         }
 
-        private void theGrid_DragOver(object sender, System.Windows.DragEventArgs e)
-        {
-          
 
-        }
-
-        private void theGrid_DragEnter(object sender, System.Windows.DragEventArgs e)
-        {
-           
-        }
-
-        private void theGrid_Drop(object sender, System.Windows.DragEventArgs e)
-        {
-           
-            
-        }
-
+        /// <summary>
+        /// this function binds the images to the list
+        /// </summary>
+        /// <param name="mediaFolderId"></param>
         public void BindImages(Guid mediaFolderId)
         {
             try
@@ -187,11 +143,12 @@ namespace RAPPTest
             }
         }
 
-        private void lstImageGallery_DragDropCompleted(object sender, Telerik.Windows.DragDrop.DragDropCompletedEventArgs e)
-        {
 
-        }
-
+        /// <summary>
+        /// this event is called when user clicks on the image thumbnail and shows script tab.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lstImageGallery_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             myClickWaitTimer.Stop();
@@ -202,6 +159,11 @@ namespace RAPPTest
           
         }
 
+        /// <summary>
+        /// this event is called when user clicks on the image thumbnail and shows organizer tab.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lstImageGallery_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             myClickWaitTimer.Start();
@@ -211,11 +173,21 @@ namespace RAPPTest
             e.Handled = true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lstImageGallery_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
           
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void mouseWaitTimer_Tick(object sender, EventArgs e)
         {
             myClickWaitTimer.Stop();
@@ -224,10 +196,14 @@ namespace RAPPTest
             //Trace.WriteLine("Single Click");
         }
 
+        /// <summary>
+        /// this function gets media by media id
+        /// </summary>
+        /// <param name="mediaId"></param>
+        /// <param name="selectedIndex"></param>
         private void GetMediaByMediaId(Guid mediaId, int selectedIndex)
         {
             MainWindow window = (MainWindow)Application.Current.MainWindow;
-            
             
             if (selectedIndex == 2)
             {
@@ -242,6 +218,10 @@ namespace RAPPTest
             ShowData(mediaId);
         }
 
+        /// <summary>
+        /// this function shows image related data
+        /// </summary>
+        /// <param name="mediaId"></param>
         private void ShowData(Guid mediaId)
         {
             MediaView mv = new MediaView();
@@ -258,6 +238,11 @@ namespace RAPPTest
             window.txtNotesOrganizer.Text = m.Notes;
         }
 
+        /// <summary>
+        /// setting image as screen saver
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lstImageGallery_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             ListBox item = (ListBox)sender;
@@ -292,8 +277,5 @@ namespace RAPPTest
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
-
-      
-
     }
 }

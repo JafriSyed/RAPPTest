@@ -86,7 +86,12 @@
     <Compile Include="BusinessLogic\Media.cs" />
     <Compile Include="BusinessLogic\Folder.cs" />
     <Compile Include="BusinessLogic\MediaView.cs" />
-    <Compile Include="Classes\DragVisualProvider.cs" />
+    <Compile Include="Classes\FileValidator.cs" />
+    <Compile Include="Classes\Model.cs" />
+    <Compile Include="Classes\Events.cs" />
+    <Compile Include="Classes\IView.cs" />
+    <Compile Include="Classes\PlayView.cs" />
+    <Compile Include="Classes\View.cs" />
     <Compile Include="Classes\WPFwindow.cs" />
     <Compile Include="RappTestModel.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -205,6 +210,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\zoom.png" />
+    <Resource Include="Resources\zoom_max.png" />
+    <Resource Include="Resources\zoom_out.png" />
     <Content Include="RappTest.sdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

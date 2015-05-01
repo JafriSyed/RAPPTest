@@ -9,6 +9,10 @@ namespace RAPPTest.Utilities
 {
     public static class Utilities
     {
+        /// <summary>
+        /// populates screen saver drop down control
+        /// </summary>
+        /// <returns></returns>
         public static ObservableCollection<int> GetTimerList()
         {
             ObservableCollection<int> timerList = new ObservableCollection<int>();
@@ -19,6 +23,11 @@ namespace RAPPTest.Utilities
             return timerList;
         }
 
+        /// <summary>
+        /// renaming and moving file to the images folder
+        /// </summary>
+        /// <param name="oldFileName"></param>
+        /// <returns></returns>
         public static string RenameAndMoveFile(string oldFileName)
         {
             string newFileName = string.Empty;

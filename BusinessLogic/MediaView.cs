@@ -13,8 +13,13 @@ namespace RAPPTest
     public class MediaView : INotifyCollectionChanged
     {
 
-        public ObservableCollection<Media> mediaList = new ObservableCollection<Media>();
+        public ObservableCollection<Media> _mediaList = new ObservableCollection<Media>();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mediaFolderId"></param>
+        /// <returns></returns>
         public ObservableCollection<Media> GetAllMediaData(Guid mediaFolderId)
         {
             try
@@ -30,9 +35,9 @@ namespace RAPPTest
                                 Sequence = (Int32)m.Sequence
                             };
 
-                mediaList = new ObservableCollection<Media>(query);
-                AddDirectoryToFileName(mediaList);
-                return mediaList;
+                _mediaList = new ObservableCollection<Media>(query);
+                AddDirectoryToFileName(_mediaList);
+                return _mediaList;
 
             }
             catch (Exception ex)
@@ -41,6 +46,11 @@ namespace RAPPTest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mediaId"></param>
+        /// <returns></returns>
         public Medium GetMediaByMediaId(Guid mediaId)
         {
             try
@@ -59,6 +69,10 @@ namespace RAPPTest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lstMedia"></param>
         public void UpdateSequence(List<Medium> lstMedia)
         {
             try
@@ -78,6 +92,11 @@ namespace RAPPTest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mediaId"></param>
+        /// <param name="m"></param>
         public void UpdateImageData(Guid mediaId, Medium m)
         {
             try
@@ -100,6 +119,10 @@ namespace RAPPTest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public ObservableCollection<Media> GetAllImages()
         {
             try
@@ -118,10 +141,10 @@ namespace RAPPTest
                             };
                 if (query.Count() > 0)
                 {
-                    mediaList = new ObservableCollection<Media>(query);
-                    AddDirectoryToFileName(mediaList);
+                    _mediaList = new ObservableCollection<Media>(query);
+                    AddDirectoryToFileName(_mediaList);
                 }
-                return mediaList;
+                return _mediaList;
 
             }
             catch (Exception ex)
@@ -130,6 +153,10 @@ namespace RAPPTest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mediaList"></param>
         public static void InsertImages(List<Media> mediaList)
         {
             try
@@ -158,6 +185,10 @@ namespace RAPPTest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mediaId"></param>
         public void DeleteImage(Guid mediaId)
         {
             try
@@ -180,6 +211,10 @@ namespace RAPPTest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mediaId"></param>
         public void SetImageAsScreenSaver(Guid mediaId)
         {
             try
@@ -201,6 +236,12 @@ namespace RAPPTest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="folderNum"></param>
+        /// <param name="folderName"></param>
+        /// <returns></returns>
         public static IEnumerable<Folder> GetFolderId(int folderNum, string folderName)
         {
             RappTestEntities mediaEntity = new RappTestEntities();
@@ -217,28 +258,42 @@ namespace RAPPTest
             return query;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ObservableCollection<Media> MediaList
         {
-            get { return mediaList; }
+            get { return _mediaList; }
             set
             {
-                if (this.mediaList != value)
+                if (this._mediaList != value)
                 {
-                    this.mediaList = value;
-                    this.CollectionChanged(this.mediaList, new NotifyCollectionChangedEventArgs(
+                    this._mediaList = value;
+                    this.CollectionChanged(this._mediaList, new NotifyCollectionChangedEventArgs(
                                                                 NotifyCollectionChangedAction.Reset));
                 }
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
         public void NotifyPropertyChanged(NotifyCollectionChangedEventArgs args)
         {
             if (this.CollectionChanged != null)
                 this.CollectionChanged(this, args);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mediaList"></param>
         private void AddDirectoryToFileName(ObservableCollection<Media> mediaList)
         {
             string appDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;

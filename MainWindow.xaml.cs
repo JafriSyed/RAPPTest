@@ -42,7 +42,7 @@ namespace RAPPTest
 
         #region Static Variables
 
-        //private Manager manager;
+        //private Manager ;
         [DllImport("User32.dll")]
         public static extern bool LockWorkStation();
         [DllImport("User32.dll")]
@@ -74,7 +74,11 @@ namespace RAPPTest
             this.screenSaverTimer.ItemsSource = Utilities.Utilities.GetTimerList();
             this.screenSaverTimer.SelectedIndex = 2;
         }
-
+       
+        /// <summary>
+        /// Gets system idle time to show screen saver
+        /// </summary>
+        /// <returns></returns>
         private static uint GetIdleTime()
         {
             LASTINPUTINFO LastUserAction = new LASTINPUTINFO();
@@ -83,11 +87,19 @@ namespace RAPPTest
             return ((uint)Environment.TickCount - LastUserAction.dwTime);
         }
 
+        /// <summary>
+        /// Gets ticks count
+        /// </summary>
+        /// <returns></returns>
         private static long GetTickCount()
         {
             return Environment.TickCount;
         }
 
+        /// <summary>
+        /// Gets time when last input was done.
+        /// </summary>
+        /// <returns></returns>
         private static long GetLastInputTime()
         {
             LASTINPUTINFO LastUserAction = new LASTINPUTINFO();
@@ -100,6 +112,9 @@ namespace RAPPTest
             return LastUserAction.dwTime;
         }
 
+        /// <summary>
+        /// Starting time control
+        /// </summary>
         private void StartTimer()
         {
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
@@ -117,11 +132,14 @@ namespace RAPPTest
             for (int i = 0; i < 13; i++)
             {
                 ColumnDefinition colDefn = new ColumnDefinition();
-                gridButtonUpperImport.ColumnDefinitions.Add(colDefn);
+                ColumnDefinition colDefn2 = new ColumnDefinition();
+                gridButtonUpper.ColumnDefinitions.Add(colDefn);
+                gridButtonUpperImport.ColumnDefinitions.Add(colDefn2);
             }
             for (int i = 0; i < 13; i++)
             {
                 Button btn = new Button();
+                Button btn2 = new Button();
                 if (i == 0)
                     _selectedButton = btn;
                 btn.Name = startLabel.ToString();
@@ -130,12 +148,21 @@ namespace RAPPTest
                 btn.FontFamily = new FontFamily("Arial");
                 btn.Click += new RoutedEventHandler(btn_Click);
                 btn.AllowDrop = true;
-                btn.Drop += new DragEventHandler(key_Drop);
                 btn.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
                     btn.Margin = new Thickness(2, 0, 0, 0);
 
-                gridButtonUpperImport.Children.Add(btn);
+                btn2.Name = startLabel.ToString();
+                btn2.Content = "" + startLabel;
+                btn2.FontSize = 24;
+                btn2.FontFamily = new FontFamily("Arial");
+                btn2.Click += new RoutedEventHandler(btn_Click);
+                btn2.AllowDrop = true;
+                btn2.SetValue(Grid.ColumnProperty, i);
+                if (i > 0)
+                    btn.Margin = new Thickness(2, 0, 0, 0);
+                gridButtonUpper.Children.Add(btn);
+                gridButtonUpperImport.Children.Add(btn2);
                 startLabel++;
             }
         }
@@ -149,30 +176,45 @@ namespace RAPPTest
             for (int i = 0; i < 13; i++)
             {
                 ColumnDefinition colDefn = new ColumnDefinition();
-                gridButtonLowerImport.ColumnDefinitions.Add(colDefn);
+                gridButtonLower.ColumnDefinitions.Add(colDefn);
+                ColumnDefinition colDefn2 = new ColumnDefinition();
+                gridButtonLowerImport.ColumnDefinitions.Add(colDefn2);
             }
             for (int i = 0; i < 13; i++)
             {
                 Button btn = new Button();
+                Button btn2 = new Button();
                 btn.Content = startLabel;
                 btn.FontSize = 24;
                 btn.FontFamily = new FontFamily("Arial");
                 btn.Click += new RoutedEventHandler(btn_Click);
                 btn.AllowDrop = true;
-                btn.Drop += new DragEventHandler(key_Drop);
                 btn.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
                 {
                     btn.Margin = new Thickness(2, 0, 0, 0);
                 }
-
-                gridButtonLowerImport.Children.Add(btn);
-
+                btn2.Content = startLabel;
+                btn2.FontSize = 24;
+                btn2.FontFamily = new FontFamily("Arial");
+                btn2.Click += new RoutedEventHandler(btn_Click);
+                btn2.AllowDrop = true;
+                btn2.SetValue(Grid.ColumnProperty, i);
+                if (i > 0)
+                {
+                    btn2.Margin = new Thickness(2, 0, 0, 0);
+                }
+                gridButtonLower.Children.Add(btn);
+                gridButtonLowerImport.Children.Add(btn2);
                 startLabel++;
             }
         }
 
-
+        /// <summary>
+        /// Gets Media Folder Id by folder number and name and setting its value on the page in a hidden control
+        /// </summary>
+        /// <param name="folderNum"></param>
+        /// <param name="folderName"></param>
         private void GetMediaFolderID(int folderNum, string folderName)
         {
             IEnumerable<Folder> folder = MediaView.GetFolderId(folderNum, folderName);
@@ -213,20 +255,6 @@ namespace RAPPTest
         }
 
 
-        protected override void OnClosed(EventArgs e)
-        {
-
-        }
-
-        private void textBorder_MouseEnter(object sender, MouseEventArgs e)
-        {
-            
-        }
-
-        private void textBorder_MouseLeave(object sender, MouseEventArgs e)
-        {
-
-        }
 
         private void ImagebucketTab_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -259,12 +287,12 @@ namespace RAPPTest
                 ic.BindImages((Guid)lblMediaFolderId.Content);
             }
         }
-
-        private void theSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            
-        }
-
+        
+        /// <summary>
+        /// Deleting the image on dropping the image to recylcle folder.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnRecycleDrop(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data is DataObject)
@@ -281,13 +309,63 @@ namespace RAPPTest
         private void iconZoomOut_MouseUp(object sender, MouseButtonEventArgs e)
         {
 
+            for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+            {
+                ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
+                lbi.Width = 400;
+                lbi.Height = 400;
+            }
         }
+
+   
 
         private void iconZoomIn_MouseUp(object sender, MouseButtonEventArgs e)
         {
-
+            MessageBox.Show(string.Empty);
         }
 
+        private void iconZoomMax_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show(string.Empty);
+        }
+
+        private void play_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            PlayView playView = new PlayView();
+            playView.EnterFullScreen();
+            //this.playView.getWPFWindow.setIsOpen = true;
+            //playView.PlayTabItem.IsSelected = false;
+            //organizerView.OrganizerTabItem.IsSelected = true;
+            //organizerView.OrganizerTabItem.IsSelected = true;
+            return;
+        }
+
+        private void btnUpdateSequence_Click(object sender, RoutedEventArgs e)
+        {
+            List<Medium> lstMedium = new List<Medium>();
+            MediaView mv = new MediaView();
+
+            Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
+            int sequence = 0;
+            MediaImportControl mic = dndPanelImport;
+            foreach (Media item in mic.lstImageGallery.Items)
+            {
+                sequence++;
+                Medium mItem = new Medium();
+                mItem.MediaId = item.MediaId;
+                mItem.Sequence = sequence;
+                mItem.FileName = item.FileName;
+                lstMedium.Add(mItem);
+            }
+            mv.UpdateSequence(lstMedium);
+            mic.BindImages(mediaFolderId);
+        }
+         
+        /// <summary>
+        /// showing images against respective folder when the user clicks on the folder icon.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void folder_MouseUp(object sender, MouseButtonEventArgs e)
         {
             //dndPanel.UpdateItems();
@@ -306,26 +384,6 @@ namespace RAPPTest
                 MediaImportControl ic = new MediaImportControl();
                 ic.BindImages((Guid)lblMediaFolderId.Content);
             }
-        }
-
-        private void folder_Drop(object sender, DragEventArgs e)
-        {
-
-        }
-
-        private void key_Drop(object sender, DragEventArgs e)
-        {
-
-        }
-
-        private void upperTxtBox_Drop(object sender, DragEventArgs e)
-        {
-            //MessageBox.Show("Upper texbox");
-        }
-
-        private void middleTextBox_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            //MessageBox.Show("Middle texbox");
         }
 
         private void middleTextBox_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -347,66 +405,50 @@ namespace RAPPTest
             }
         }
 
-        private void expBrowser_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            
-        }
-
-        private void expBrowser_MouseMove(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        private void iconZoomOutImport_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void theSliderImport_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-
-        }
-
-        private void iconZoomInImport_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void playViewbox_MouseEnter(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        private void organizer_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void Window_KeyUp(object sender, KeyEventArgs e)
-        {
-
-        }
-
         private void btnSaveOrganizer_Click(object sender, RoutedEventArgs e)
         {
-            Guid mediaId = (Guid)lblScriptMediaId.Content;
             MediaView mv = new MediaView();
             Medium m = new Medium();
-            m.Description = txtDescriptionOrganizer.Text;
-            m.Title = txtTitleOrganizer.Text;
-            m.Notes = txtNotesOrganizer.Text;
-            mv.UpdateImageData(mediaId, m);
+            List<Medium> lstMedium = new List<Medium>();
+
+            Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
+            int sequence = 0;
+            MediaImportControl mic = dndPanelImport;
+
+            if (lblScriptMediaId.Content != null)
+            {
+                Guid mediaId = (Guid)lblScriptMediaId.Content;
+               
+                m.Description = txtDescriptionOrganizer.Text;
+                m.Title = txtTitleOrganizer.Text;
+                m.Notes = txtNotesOrganizer.Text;
+                mv.UpdateImageData(mediaId, m);
+            }
+          
+            foreach (Media item in mic.lstImageGallery.Items)
+            {
+                sequence++;
+                Medium mItem = new Medium();
+                mItem.MediaId = item.MediaId;
+                mItem.Sequence = sequence;
+                mItem.FileName = item.FileName;
+                lstMedium.Add(mItem);
+            }
+            mv.UpdateSequence(lstMedium);
         }
 
         private void btnSaveMedia_Click(object sender, RoutedEventArgs e)
         {
-            Guid mediaId = (Guid)lblScriptMediaId.Content;
-            MediaView mv = new MediaView();
-            Medium m = new Medium();
-            m.Title = txtTitle.Text;
-            m.Description = txtDescription.Text;
-            m.Notes = txtNotes.Text;
-            mv.UpdateImageData(mediaId, m);
+            if (lblScriptMediaId.Content != null)
+            {
+                Guid mediaId = (Guid)lblScriptMediaId.Content;
+                MediaView mv = new MediaView();
+                Medium m = new Medium();
+                m.Title = txtTitle.Text;
+                m.Description = txtDescription.Text;
+                m.Notes = txtNotes.Text;
+                mv.UpdateImageData(mediaId, m);
+            }
         }
 
         private void fullScreenButton_Click(object sender, RoutedEventArgs e)
@@ -416,6 +458,17 @@ namespace RAPPTest
         }
 
         #endregion
+
+        public TabItem PlayTabItem
+        {
+            get { return play; }
+        }
+
+        public Viewbox PlayViewbox
+        {
+            get { return playViewbox; }
+        }
+
 
 
         #region Struct
@@ -427,7 +480,5 @@ namespace RAPPTest
         }
 
         #endregion
-
-       
     }
 }
