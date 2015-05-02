@@ -61,6 +61,8 @@ namespace RAPPTest
             LoadScreenSaverControl();
             CreateUpperGridButtons();
             CreateLowerGridButtons();
+            // TODO Change to path of where the program is installed (i.e. somewhere more relevant
+            // than just C:\\)
             expBrowser.NavigationTarget = ShellFileSystemFolder.FromFolderPath("C:\\");
         }
 
@@ -71,7 +73,10 @@ namespace RAPPTest
 
         private void LoadScreenSaverControl()
         {
-            this.screenSaverTimer.ItemsSource = Utilities.Utilities.GetTimerList();
+            // populate the screensaver times dropdown list
+            this.screenSaverTimer.ItemsSource = Utilities.Utilities.GetScreensaverTimesList();
+
+            // set default to the 2nd value in the screensave time dropdown list (i.e. 90 seconds)
             this.screenSaverTimer.SelectedIndex = 2;
         }
        
@@ -131,40 +136,62 @@ namespace RAPPTest
             char startLabel = 'A';
             for (int i = 0; i < 13; i++)
             {
-                ColumnDefinition colDefn = new ColumnDefinition();
-                ColumnDefinition colDefn2 = new ColumnDefinition();
-                gridButtonUpper.ColumnDefinitions.Add(colDefn);
-                gridButtonUpperImport.ColumnDefinitions.Add(colDefn2);
+                // this loop will create all the alphabetical buttons down the bottom
+                // each loop will create an upper button and a lower button.
+                // QUESTION: Why are these being created using columns rather than rows?
+                ColumnDefinition upper = new ColumnDefinition();
+                ColumnDefinition lower = new ColumnDefinition();
+
+                gridButtonUpper.ColumnDefinitions.Add(upper);
+                gridButtonUpperImport.ColumnDefinitions.Add(lower);
             }
             for (int i = 0; i < 13; i++)
             {
-                Button btn = new Button();
-                Button btn2 = new Button();
-                if (i == 0)
-                    _selectedButton = btn;
-                btn.Name = startLabel.ToString();
-                btn.Content = "" + startLabel;
-                btn.FontSize = 24;
-                btn.FontFamily = new FontFamily("Arial");
-                btn.Click += new RoutedEventHandler(btn_Click);
-                btn.AllowDrop = true;
-                btn.SetValue(Grid.ColumnProperty, i);
-                if (i > 0)
-                    btn.Margin = new Thickness(2, 0, 0, 0);
+                Button btnUpper = new Button();
+                Button btnLower = new Button();
+                
+                // this sets the default button upon initial load
+                if (i == 0) _selectedButton = btnUpper;
 
-                btn2.Name = startLabel.ToString();
-                btn2.Content = "" + startLabel;
-                btn2.FontSize = 24;
-                btn2.FontFamily = new FontFamily("Arial");
-                btn2.Click += new RoutedEventHandler(btn_Click);
-                btn2.AllowDrop = true;
-                btn2.SetValue(Grid.ColumnProperty, i);
-                if (i > 0)
-                    btn.Margin = new Thickness(2, 0, 0, 0);
-                gridButtonUpper.Children.Add(btn);
-                gridButtonUpperImport.Children.Add(btn2);
+                // this is just setting up basic appearance
+                btnUpper = FormatAlphabeticalButton(btnUpper, startLabel);
+
+                // these set up event handling for the buttons
+                btnUpper.Click += new RoutedEventHandler(btn_Click);
+
+                btnUpper.SetValue(Grid.ColumnProperty, i);
+
+                // TODO add a frame in which the buttons are spaced
+                // such that we don't have to manually set thicknesses in this fashion
+                if (i > 0) btnUpper.Margin = new Thickness(2, 0, 0, 0);
+
+                btnLower = FormatAlphabeticalButton(btnLower, startLabel);
+
+                // logic
+                btnLower.Click += new RoutedEventHandler(btn_Click);
+
+                btnLower.SetValue(Grid.ColumnProperty, i);
+
+                // appearance
+                if (i > 0) btnUpper.Margin = new Thickness(2, 0, 0, 0);
+
+                gridButtonUpper.Children.Add(btnUpper);
+                gridButtonUpperImport.Children.Add(btnLower);
                 startLabel++;
             }
+        }
+
+        private Button FormatAlphabeticalButton(Button btn, char startLabel)
+        {
+            // Set the basic appearance of alphabetical buttons at the bottom of the main window
+            btn.Name = startLabel.ToString();
+            btn.Content = "" + startLabel;
+            btn.FontSize = 24;
+            btn.FontFamily = new FontFamily("Arial");
+
+            btn.AllowDrop = true;
+
+            return btn;
         }
 
         /// <summary>
