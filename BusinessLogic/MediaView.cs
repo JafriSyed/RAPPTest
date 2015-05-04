@@ -28,6 +28,7 @@ namespace RAPPTest
                 RappTestEntities rappEntity = new RappTestEntities();
                 var query = from m in rappEntity.Media
                             where m.MediaFolderId == mediaFolderId
+                            orderby m.Sequence
                             select new Media
                             {
                                 MediaId = (Guid)m.MediaId,
