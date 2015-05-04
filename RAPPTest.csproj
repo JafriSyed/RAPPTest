@@ -51,6 +51,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.DexterLib, Version=1.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>bin\Debug\Interop.DexterLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\packages\WindowsAPICodePack-Core.1.1.1\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -60,6 +65,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
@@ -86,7 +92,6 @@
     <Compile Include="BusinessLogic\Media.cs" />
     <Compile Include="BusinessLogic\Folder.cs" />
     <Compile Include="BusinessLogic\MediaView.cs" />
-    <Compile Include="Classes\FileValidator.cs" />
     <Compile Include="Classes\Model.cs" />
     <Compile Include="Classes\Events.cs" />
     <Compile Include="Classes\IView.cs" />
@@ -210,6 +215,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\large.png" />
+    <Resource Include="Resources\medium.png" />
+    <Resource Include="Resources\small.png" />
     <Resource Include="Resources\zoom.png" />
     <Resource Include="Resources\zoom_max.png" />
     <Resource Include="Resources\zoom_out.png" />

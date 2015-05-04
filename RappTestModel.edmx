@@ -52,7 +52,6 @@
           <Property Type="String" Name="Notes" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="Sequence" />
           <Property Type="Boolean" Name="IsScreenSaver" />
-          <Property Type="Boolean" Name="IsDeleted" />
         </EntityType>
         <EntityType Name="MediaFolder">
           <Key>
@@ -72,7 +71,6 @@
           <EntitySetMapping Name="Media">
             <EntityTypeMapping TypeName="RappTestModel.Medium">
               <MappingFragment StoreEntitySet="Media">
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="IsScreenSaver" ColumnName="IsScreenSaver" />
                 <ScalarProperty Name="Sequence" ColumnName="Sequence" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
@@ -115,7 +113,7 @@
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="Model1">
-        <EntityTypeShape EntityType="RappTestModel.Medium" Width="1.5" PointX="4.5" PointY="0.75" Height="2.7494921875000031" />
+        <EntityTypeShape EntityType="RappTestModel.Medium" Width="1.5" PointX="4.5" PointY="0.75" Height="2.5571907552083331" />
         <EntityTypeShape EntityType="RappTestModel.MediaFolder" Width="1.5" PointX="2.75" PointY="0.75" Height="1.7879850260416674" />
       </Diagram>
     </Diagrams>

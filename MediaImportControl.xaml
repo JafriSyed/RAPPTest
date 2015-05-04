@@ -12,7 +12,7 @@
 
 
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Name="dndSrollbar" >
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Name="dndSrollbar" >
             <Grid x:Name="theGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
@@ -29,14 +29,16 @@
                  Margin="0,0,0,10" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="stpnlImage">
-                                <Image Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="imgMedia"
-							   Width="150"
+                            <StackPanel HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" x:Name="stpnlImage">
+                                <Border  Name="theGrid" Height="Auto" Grid.Row="0" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                        BorderThickness="3" BorderBrush="White" Grid.Column="0">
+                                    <Image Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="imgMedia"
 							   Margin="0 0 0 0">
-                                    <Image.Source>
-                                        <BitmapImage UriSource="{Binding FileName}"  DecodePixelWidth="150" DecodePixelHeight="150" />
-                                    </Image.Source>
-                                </Image>
+                                        <Image.Source>
+                                            <BitmapImage UriSource="{Binding FileName}"  DecodePixelWidth="100" />
+                                        </Image.Source>
+                                    </Image>
+                                </Border>
                                 <TextBlock Text="{Binding Sequence}" Foreground="#FF767676" HorizontalAlignment="Center" />
                             </StackPanel>
                         </DataTemplate>
@@ -56,7 +58,7 @@
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <telerik:RadUniformGrid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            <telerik:RadUniformGrid Columns="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                     <telerik:ListBoxDragDrop.Behavior>

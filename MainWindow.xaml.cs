@@ -23,6 +23,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Windows.Controls.Primitives;
 
 namespace RAPPTest
 {
@@ -57,6 +58,8 @@ namespace RAPPTest
 
         public MainWindow()
         {
+            // initializing controls, loading all the buttons on the UI and populating screen saver control
+
             InitializeComponent();
             LoadScreenSaverControl();
             CreateUpperGridButtons();
@@ -81,6 +84,8 @@ namespace RAPPTest
         /// <returns></returns>
         private static uint GetIdleTime()
         {
+            // this function check the idle time of the application
+
             LASTINPUTINFO LastUserAction = new LASTINPUTINFO();
             LastUserAction.cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(LastUserAction);
             GetLastInputInfo(ref LastUserAction);
@@ -102,6 +107,9 @@ namespace RAPPTest
         /// <returns></returns>
         private static long GetLastInputTime()
         {
+
+            //this function gets the last input time
+
             LASTINPUTINFO LastUserAction = new LASTINPUTINFO();
             LastUserAction.cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(LastUserAction);
             if (!GetLastInputInfo(ref LastUserAction))
@@ -160,7 +168,7 @@ namespace RAPPTest
                 btn2.AllowDrop = true;
                 btn2.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
-                    btn.Margin = new Thickness(2, 0, 0, 0);
+                    btn2.Margin = new Thickness(2, 0, 0, 0);
                 gridButtonUpper.Children.Add(btn);
                 gridButtonUpperImport.Children.Add(btn2);
                 startLabel++;
@@ -217,12 +225,15 @@ namespace RAPPTest
         /// <param name="folderName"></param>
         private void GetMediaFolderID(int folderNum, string folderName)
         {
+            //getting media folder id to bind it to the lblMediaFolderId, this lblMediaFolderId will be user to fetch media files from the database
             IEnumerable<Folder> folder = MediaView.GetFolderId(folderNum, folderName);
             foreach (var f in folder)
             {
                 lblMediaFolderId.Content = f.MediaFolderId;            
             }
         }
+
+   
 
         #endregion
 
@@ -251,13 +262,31 @@ namespace RAPPTest
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             if (GetIdleTime() > Convert.ToInt32(screenSaverTimer.SelectedValue) * 1000)  //10 secs, Time to wait before locking
-                MessageBox.Show("Show Screen Saver....");
+            {
+                ShowScreenSaver();
+            }
         }
 
+        private void ShowScreenSaver()
+        {
+            PlayView playView = new PlayView();
+            RappTestEntities rappRntity = new RappTestEntities();
+            IEnumerable<Media> media = from m in rappRntity.Media
+                                       where m.IsScreenSaver == true
+                                       select new Media { FileName = m.FileName };
 
+            if (media.Count() > 0)
+            { 
+                foreach(Media m in media)
+                    playView.EnterFullScreen(m);
+            }
+            
+            //MessageBox.Show("Screen Saver...");
+        }
 
         private void ImagebucketTab_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            //binding all media files on the image bucket tab UI.
             try
             {
                 MediaView mv = new MediaView();
@@ -275,13 +304,18 @@ namespace RAPPTest
             Button btn = sender as Button;
             if (btn != null)
             {
+                //setting active folder on the bottom of the UI
                 activeBtn.Content = btn.Content;
                 activeBtnImport.Content = btn.Content;
+
+                //styling buttons
                 btn.Background = Brushes.Purple;
                 btn.Foreground = Brushes.Yellow;
                 _selectedButton.ClearValue(Button.BackgroundProperty);
                 _selectedButton.ClearValue(Button.ForegroundProperty);
                 _selectedButton = btn;
+
+                //binding images after fetching them from the database by providing media folder id
                 GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
                 MediaImportControl ic = new MediaImportControl();
                 ic.BindImages((Guid)lblMediaFolderId.Content);
@@ -297,51 +331,63 @@ namespace RAPPTest
         {
             if (e.Data is DataObject)
             {
+                //deleting the image from the database
                 List<object> droppedItem = (List<object>)e.Data.GetData(e.Data.GetFormats()[0]);
                 Media m = (Media)droppedItem[0];
                 Guid mediaId = (Guid)m.MediaId;
                 MediaView mv = new MediaView();
                 mv.DeleteImage(mediaId);
+
+                //binding UI again
                 mv.GetAllMediaData((Guid)lblMediaFolderId.Content);
             }   
         }
 
-        private void iconZoomOut_MouseUp(object sender, MouseButtonEventArgs e)
+        private void iconZoomOut_MouseUp(object sender, RoutedEventArgs e)
         {
-
+            //chaning size of each image by looping through the list
             for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
             {
                 ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
-                lbi.Width = 400;
-                lbi.Height = 400;
+                lbi.Width = 100;
             }
         }
 
-   
-
-        private void iconZoomIn_MouseUp(object sender, MouseButtonEventArgs e)
+        private void iconZoomIn_MouseUp(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(string.Empty);
+            for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+            {  
+                //chaning size of each image by looping through the list
+                ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
+                lbi.Width = 120;
+                lbi.Height = 120;
+            }
         }
 
-        private void iconZoomMax_MouseUp(object sender, MouseButtonEventArgs e)
+        private void iconZoomMax_MouseUp(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(string.Empty);
+            for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+            {
+                //chaning size of each image by looping through the list
+                ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
+                lbi.Width = 130;
+                lbi.Height = 130;
+            }
         }
 
         private void play_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            //calling the play view UI when the play tab is selected from the menu
+            
             PlayView playView = new PlayView();
             playView.EnterFullScreen();
-            //this.playView.getWPFWindow.setIsOpen = true;
-            //playView.PlayTabItem.IsSelected = false;
-            //organizerView.OrganizerTabItem.IsSelected = true;
-            //organizerView.OrganizerTabItem.IsSelected = true;
+            this.tabControl.SelectedIndex = 2;
             return;
         }
 
         private void btnUpdateSequence_Click(object sender, RoutedEventArgs e)
         {
+            //updating sequence of the images
             List<Medium> lstMedium = new List<Medium>();
             MediaView mv = new MediaView();
 
@@ -358,6 +404,8 @@ namespace RAPPTest
                 lstMedium.Add(mItem);
             }
             mv.UpdateSequence(lstMedium);
+
+            //binding list again.
             mic.BindImages(mediaFolderId);
         }
          
@@ -368,7 +416,7 @@ namespace RAPPTest
         /// <param name="e"></param>
         private void folder_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            //dndPanel.UpdateItems();
+            //styling folder buttons when clicked
             Label clickedFolder = sender as Label;
             if (clickedFolder != null)
             {
@@ -380,6 +428,8 @@ namespace RAPPTest
                     _openFolder.Foreground = this.FindResource("Purple") as SolidColorBrush;
                     _openFolder = clickedFolder;
                 }
+
+                //binding list again as now the folder has changed
                 GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
                 MediaImportControl ic = new MediaImportControl();
                 ic.BindImages((Guid)lblMediaFolderId.Content);
@@ -388,6 +438,8 @@ namespace RAPPTest
 
         private void middleTextBox_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            // in this event we are basically showing and hiding the note field 
+            
             MainWindow window = (MainWindow)Application.Current.MainWindow;
             if (window.tabControl.SelectedIndex == 3)
             {
@@ -407,6 +459,8 @@ namespace RAPPTest
 
         private void btnSaveOrganizer_Click(object sender, RoutedEventArgs e)
         {
+            //saving description against the images and video files
+            
             MediaView mv = new MediaView();
             Medium m = new Medium();
             List<Medium> lstMedium = new List<Medium>();
@@ -451,11 +505,6 @@ namespace RAPPTest
             }
         }
 
-        private void fullScreenButton_Click(object sender, RoutedEventArgs e)
-        {
-            WPFWindow w = new WPFWindow();
-            w.Show();
-        }
 
         #endregion
 
@@ -480,5 +529,7 @@ namespace RAPPTest
         }
 
         #endregion
+
+
     }
 }

@@ -4,7 +4,6 @@
     <EntitySetMapping Name="Media">
       <EntityTypeMapping TypeName="RappTestModel.Medium">
         <MappingFragment StoreEntitySet="Media">
-          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
           <ScalarProperty Name="IsScreenSaver" ColumnName="IsScreenSaver" />
           <ScalarProperty Name="Sequence" ColumnName="Sequence" />
           <ScalarProperty Name="Notes" ColumnName="Notes" />

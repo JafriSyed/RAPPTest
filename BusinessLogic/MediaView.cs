@@ -24,10 +24,10 @@ namespace RAPPTest
         {
             try
             {
+                // Getting all media elements by mediafolderId
                 RappTestEntities rappEntity = new RappTestEntities();
                 var query = from m in rappEntity.Media
                             where m.MediaFolderId == mediaFolderId
-                            && m.IsDeleted == false
                             select new Media
                             {
                                 MediaId = (Guid)m.MediaId,
@@ -35,7 +35,10 @@ namespace RAPPTest
                                 Sequence = (Int32)m.Sequence
                             };
 
+                //transforming the collection to the list
                 _mediaList = new ObservableCollection<Media>(query);
+
+                //initially we just have the file name so we are concatenating the directory to the file name to display it on the UI.
                 AddDirectoryToFileName(_mediaList);
                 return _mediaList;
 
@@ -55,6 +58,7 @@ namespace RAPPTest
         {
             try
             {
+                //getting media elements by media id
                 RappTestEntities rappEntity = new RappTestEntities();
                 var query = from m in rappEntity.Media
                             where m.MediaId == mediaId
@@ -77,6 +81,7 @@ namespace RAPPTest
         {
             try
             {
+                //updating the sequence of the images.
                 RappTestEntities rappEntity = new RappTestEntities();
                 var query = (from d1 in rappEntity.Media.AsEnumerable()
                              join d2 in lstMedia.AsEnumerable() on d1.MediaId equals d2.MediaId
@@ -101,6 +106,7 @@ namespace RAPPTest
         {
             try
             {
+                //updating image details, this function is called from the script UI and organizer UI.
                 RappTestEntities rappEntity = new RappTestEntities();
                 var query = from media in rappEntity.Media
                             where media.MediaId == mediaId
@@ -127,6 +133,7 @@ namespace RAPPTest
         {
             try
             {
+                //Getting all the images to show on the image view UI.
                 RappTestEntities rappEntity = new RappTestEntities();
 
                 var query = from m in rappEntity.Media
@@ -161,6 +168,7 @@ namespace RAPPTest
         {
             try
             {
+                //inserting images into the database
                 RappTestEntities rappEntity = new RappTestEntities();
                 foreach (Media media in mediaList)
                 {
@@ -170,7 +178,6 @@ namespace RAPPTest
                     m.FileName = media.FileName;
                     m.Sequence = media.Sequence;
                     m.IsScreenSaver = false;
-                    m.IsDeleted = false;
                     m.Title = string.Empty;
                     m.Description = string.Empty;
                     m.Notes = string.Empty;
@@ -193,16 +200,14 @@ namespace RAPPTest
         {
             try
             {
-                RappTestEntities rappEntity = new RappTestEntities();
-                var query = from m in rappEntity.Media
-                            where m.MediaId == mediaId
-                            select m;
+                RappTestEntities rapp = new RappTestEntities();
+                var media = (from m in rapp.Media
+                             where m.MediaId == mediaId
+                             select m).First();
 
-                foreach (var m in query)
-                {
-                    m.IsDeleted = true;
-                    rappEntity.SaveChanges();
-                }
+
+                rapp.Media.DeleteObject(media);
+                rapp.SaveChanges();
 
             }
             catch (Exception ex)
@@ -219,6 +224,7 @@ namespace RAPPTest
         {
             try
             {
+                //setting the image as screen saver, only one image can be set at a time
                 RappTestEntities rappTest = new RappTestEntities();
                 var mediaList = rappTest.Media;
                 foreach (Medium m in mediaList)
@@ -244,6 +250,7 @@ namespace RAPPTest
         /// <returns></returns>
         public static IEnumerable<Folder> GetFolderId(int folderNum, string folderName)
         {
+            // getting folder id by name and number, this basically binds to the lblmediafolder id placed on the mainview xaml file
             RappTestEntities mediaEntity = new RappTestEntities();
             var query = from m in
                             mediaEntity.MediaFolders
@@ -296,12 +303,13 @@ namespace RAPPTest
         /// <param name="mediaList"></param>
         private void AddDirectoryToFileName(ObservableCollection<Media> mediaList)
         {
+            // this function loops to the list and concatenates directory to each file name.
             string appDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
-            string newFilePathForImages = appDirectory + "\\Images\\";
+            string newFilePathForImages = appDirectory + "\\Media\\";
             foreach (Media m in mediaList)
             {
-                m.FileName = string.Format("{0}{1}", newFilePathForImages, m.FileName);
-            }
-        }
+                string fileName = Utilities.Utilities.IsVideo(m.FileName) ? Utilities.Utilities.ReplaceVideoExtension(m.FileName) : m.FileName;
+                m.FileName = string.Format("{0}{1}", newFilePathForImages, fileName);
+            }        }
     }
 }

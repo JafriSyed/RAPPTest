@@ -16,7 +16,6 @@
     <Property Type="String" Name="Notes" MaxLength="2000" FixedLength="false" Unicode="true" />
     <Property Type="Int32" Name="Sequence" />
     <Property Type="Boolean" Name="IsScreenSaver" />
-    <Property Type="Boolean" Name="IsDeleted" />
   </EntityType>
   <EntityType Name="MediaFolder">
     <Key>

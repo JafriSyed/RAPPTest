@@ -15,27 +15,27 @@ namespace RAPPTest
     public class Media : INotifyPropertyChanged
     {
         #region Member Variables
-        
+
         /// <summary>
         /// /
         /// </summary>
         private Guid _mediaId;
-        
+
         /// <summary>
         /// 
         /// </summary>
         private Guid _mediaFolderId;
-        
+
         /// <summary>
         /// 
         /// </summary>
         private string _fileName;
-        
+
         /// <summary>
         /// 
         /// </summary>
         private string _title;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -45,41 +45,40 @@ namespace RAPPTest
         /// 
         /// </summary>
         private string _notes;
-        
+
         /// <summary>
         /// 
         /// </summary>
         private int _sequence;
-        
+
         /// <summary>
         /// 
         /// </summary>
         private bool _isScreenSaver;
-        
+
         /// <summary>
         /// 
         /// </summary>
         private bool _isDeleted;
-        
+
         /// <summary>
         /// 
         /// </summary>
         private int _folderNum;
-        
+
         /// <summary>
         /// 
         /// </summary>
         private string _folderName;
-        
+
         /// <summary>
         /// 
         /// </summary>
         public ObservableCollection<Media> _mediaList = new ObservableCollection<Media>();
 
-        private static string[] IMAGE_FORMATS = new string[] { ".bmp", ".gif", ".jpg", ".jpeg", ".tif" };
-        private static string[] VIDEO_FORMATS = new string[] { ".avi", ".flv", ".mov", ".mp4", ".mpg", ".wmv" };
+        private static string[] _imageFormats = new string[] { ".bmp", ".gif", ".jpg", ".jpeg", ".tif" };
+        private static string[] _videoFormats = new string[] { ".avi", ".flv", ".mov", ".mp4", ".mpg", ".wmv" };
 
-        private string source;
         #endregion
 
         #region Properties
@@ -285,19 +284,16 @@ namespace RAPPTest
             return targetWithoutExt + ext;
         }
 
-        public Media()
-        {
-            
-        }
-
         public bool IsImage()
         {
-            return IMAGE_FORMATS.Contains(Path.GetExtension(this.FileName).ToLower());
+            //checking if file is an image
+            return _imageFormats.Contains(Path.GetExtension(this.FileName).ToLower());
         }
 
         public bool IsVideo()
         {
-            return VIDEO_FORMATS.Contains(Path.GetExtension(this.FileName).ToLower());
+            //checking if file is a video
+            return _videoFormats.Contains(Path.GetExtension(this.FileName).ToLower());
         }
 
         // source can either refer to absolute path, in case its the original
@@ -306,25 +302,18 @@ namespace RAPPTest
         {
             get
             {
-                if (IsSourceInternal)
-                {
-                    return Path.GetFullPath(Path.Combine(System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "//Images//", this.FileName));
-                }
-                else
-                {
-                    return source;
-                }
+
+                // get parent directory from current directory
+                string parentDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+
+                // then add images folder to path to make full path
+                string fullPath = Path.Combine(parentDirectory + "//Media//", this.FileName);
+
+                return Path.GetFullPath(fullPath);
+
             }
         }
-        public bool IsSourceExternal
-        {
-            get { return File.Exists(source); }
-        }
-
-        public bool IsSourceInternal
-        {
-            get { return !IsSourceExternal; }
-        }
+     
         private Image GetImage()
         {
             return CreateImage(new Uri(Source, UriKind.Absolute));
@@ -341,12 +330,6 @@ namespace RAPPTest
             return CreateImage(uri);
         }
 
-
-        public static bool IsValid(string path)
-        {
-            return FileValidator.IsValidFile(path);
-        }
-
         public static bool IsImage(Uri uri)
         {
             return CreateImage(uri) != null;
@@ -361,6 +344,7 @@ namespace RAPPTest
         {
             try
             {
+                //creating image
                 BitmapImage bmp = new BitmapImage();
                 bmp.BeginInit();
                 bmp.UriSource = uri;
@@ -381,6 +365,7 @@ namespace RAPPTest
         {
             try
             {
+                //creating video
                 MediaElement video = new MediaElement();
 
                 video.BeginInit();
@@ -394,31 +379,6 @@ namespace RAPPTest
                 return null;
             }
         }
-
-        public Image GetImageThumbnail()
-        {
-            return GetImage();
-        }
-
-        public Image ScriptTabGetUIElement()
-        {
-            Uri sourceUri = new Uri(Source, UriKind.Absolute);
-            string source = Source.ToString();
-            string filenameWithoutExtension = Path.GetFileNameWithoutExtension(source);
-            if (IsImage())
-            {
-                return GetImageByUri(sourceUri);
-            }
-            else
-            {
-                string fullPath = Path.Combine("", filenameWithoutExtension + ".jpg");
-                return GetImageByUri(new Uri(fullPath));
-            }
-        }
-
-
-        /* Siwei added end */
-
 
         public UIElement GetUIElement()
         {

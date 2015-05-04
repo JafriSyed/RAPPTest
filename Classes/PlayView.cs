@@ -14,18 +14,20 @@ namespace RAPPTest
 {
     public class PlayView : View
     {
-        private Media elementModel;
-        private List<Media> elementModelList;
+        private Media _media;
+        private List<Media> _mediaList;
 
-        private TabItem playTabItem;
-        private Viewbox playViewbox;
-        private WPFWindow fullScreenWindow;
+        private TabItem _playTabItem;
+        private Viewbox _playViewbox;
+        private WPFWindow _fullScreenWindow;
 
         public PlayView(TabItem playTabItem, Viewbox playViewbox)
         {
-            this.playTabItem = playTabItem;
-            this.playViewbox = playViewbox;
-            this.fullScreenWindow = new WPFWindow(this);
+            //intializing all the components withing playbox tab
+
+            this._playTabItem = playTabItem;
+            this._playViewbox = playViewbox;
+            this._fullScreenWindow = new WPFWindow(this);
             base.ChangeRequestEvents = new ChangeRequestEvents(this);
 
             InitializeActions();
@@ -33,8 +35,8 @@ namespace RAPPTest
 
         public PlayView()
         {
-            base.ChangeRequestEvents = new ChangeRequestEvents(this);            
-            this.fullScreenWindow = new WPFWindow(this);
+            base.ChangeRequestEvents = new ChangeRequestEvents(this);
+            this._fullScreenWindow = new WPFWindow(this);
             InitializeActions();
         }
 
@@ -47,8 +49,11 @@ namespace RAPPTest
 
         private void WindowKeyUp(object sender, KeyEventArgs e)
         {
+            // handling all the key events 
+
             if (e.Key == System.Windows.Input.Key.Escape)
             {
+                //exiting full screen
                 this.getWPFWindow.Hide();
                 this.getWPFWindow.Visibility = System.Windows.Visibility.Hidden;
                 this.getWPFWindow.setIsOpen = false;
@@ -56,16 +61,21 @@ namespace RAPPTest
 
             if (e.Key == System.Windows.Input.Key.Space)
             {
-                this.getWPFWindow.SetViewboxContent(this.getElementModel);
+                //show description
+                this.getWPFWindow.SetViewboxContent(this.getMedia);
+                this.getWPFWindow.PauseVideo(this.getMedia);
+
             }
 
             else if (e.Key == System.Windows.Input.Key.Left)
             {
+                // goto previous media file
                 this.PerformPrevButtonClick();
             }
 
             else if (e.Key == System.Windows.Input.Key.Right)
             {
+                //goto next media file
                 this.PerformNextButtonClick();
             }
         }
@@ -79,6 +89,7 @@ namespace RAPPTest
         {
             if (e.Key >= System.Windows.Input.Key.D0 && e.Key <= System.Windows.Input.Key.D9)
             {
+                //checking if any key between 0 and 9 is pressed
                 string folderName = e.Key.ToString().Substring(1, 1);
                 this.PerformFolderChange(folderName);
                 this.getWPFWindow.SetFolderName(folderName);
@@ -92,6 +103,7 @@ namespace RAPPTest
         {
             if (e.Key >= System.Windows.Input.Key.A && e.Key <= System.Windows.Input.Key.Z)
             {
+                //checking if any key between a-z is pressed
                 string keyName = e.Key.ToString();
                 this.PerformKeyChange(keyName);
                 this.getWPFWindow.SetKeyName(keyName);
@@ -103,7 +115,9 @@ namespace RAPPTest
         {
             if (e.Key >= System.Windows.Input.Key.A && e.Key <= System.Windows.Input.Key.Z)
             {
+                //showing the folder number and name is full screen after a key is pressed
                 string keyName = e.Key.ToString();
+                BindMediaList(this.getWPFWindow.getFolderName(), keyName);
                 this.getWPFWindow.SetViewboxContent(this.getWPFWindow.getFolderName() + keyName);
                 this.PerformKeyChange(keyName);
                 this.getWPFWindow.SetKeyName(keyName);
@@ -118,6 +132,36 @@ namespace RAPPTest
             }
         }
 
+        private void BindMediaList(string folderName, string keyName)
+        {
+            MainWindow window = (MainWindow)Application.Current.MainWindow;
+            Label lblMediaFolderId = (Label)window.lblMediaFolderId;
+            IEnumerable<Folder> folder = MediaView.GetFolderId(Convert.ToInt32(folderName), keyName);
+            RappTestEntities rappEntity = new RappTestEntities();
+            foreach (var f in folder)
+            {
+                lblMediaFolderId.Content = f.MediaFolderId;
+            }
+
+            var query = from m in rappEntity.Media
+                        where m.MediaFolderId == (Guid)lblMediaFolderId.Content
+                        select new Media
+                        {
+                            MediaId = (Guid)m.MediaId,
+                            FileName = m.FileName,
+                            Sequence = (Int32)m.Sequence,
+                            Title = m.Title,
+                            Description = m.Description
+                        };
+
+            if (query.Count() > 0)
+            {
+                this.MediaModelList = new List<Media>(query);
+                this.MediaModel = MediaModelList[0];
+                _fullScreenWindow.EnterFullScreen(MediaModel);
+            }
+        }
+
         private void WindowKeyUpAfterA_Z(object sender, KeyEventArgs e)
         {
             if (e.Key == System.Windows.Input.Key.Enter)
@@ -128,47 +172,43 @@ namespace RAPPTest
             }
         }
 
-        public int getElementModelListCount()
+        public int getMediaModelListCount()
         {
-            return elementModelList.Count();
+            return _mediaList.Count();
         }
 
         public void PerformPrevButtonClick()
         {
             // TODO
             //ChangeRequestEvents.Fire<ElementModel>(EventProperties.PrevElementModel, elementModel);
-            if (elementModel != null)
+            if (_media != null)
             {
-                int index = elementModelList.FindIndex(e => e.MediaId == elementModel.MediaId);
+                int index = _mediaList.FindIndex(e => e.MediaId == _media.MediaId);
                 int prevIndex = index - 1;
                 if (prevIndex >= 0)
                 {
-                    ElementModel = elementModelList[prevIndex];
+                    MediaModel = _mediaList[prevIndex];
                 }
                 else
                 {
-                    ElementModel = elementModelList.LastOrDefault();
+                    MediaModel = _mediaList.LastOrDefault();
                 }
             }
         }
 
         public void PerformNextButtonClick()
         {
-            // TODO
-            //ChangeRequestEvents.Fire<ElementModel>(EventProperties.NextElementModel, elementModel);
-
-            if (elementModel != null)
+            if (_media != null)
             {
-                int index = elementModelList.FindIndex(e => e.MediaId == elementModel.MediaId);
+                int index = _mediaList.FindIndex(e => e.MediaId == _media.MediaId);
                 int nextIndex = index + 1;
-                if (nextIndex < elementModelList.Count)
-                //this.Dispatcher.Invoke(new Action(() => dynamicViewbox.Child = uiElement));
+                if (nextIndex < _mediaList.Count)
                 {
-                    ElementModel = elementModelList[nextIndex];
+                    MediaModel = _mediaList[nextIndex];
                 }
                 else
                 {
-                    ElementModel = elementModelList.FirstOrDefault();
+                    MediaModel = _mediaList.FirstOrDefault();
                 }
             }
         }
@@ -185,16 +225,19 @@ namespace RAPPTest
 
         public bool IsFullScreen
         {
-            get { return fullScreenWindow.IsOpen; }
+            get { return _fullScreenWindow.IsOpen; }
         }
 
-        
+
         public void EnterFullScreen()
         {
+            //getting the images and showing as fullscreen
             MainWindow window = (MainWindow)Application.Current.MainWindow;
-            //Label lblMediaFolderId = (Label)window.lblMediaFolderId.Content;
+            Label lblMediaFolderId = (Label)window.lblMediaFolderId;
+            Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
             RappTestEntities entity = new RappTestEntities();
             var query = from m in entity.Media
+                        where m.MediaFolderId == mediaFolderId
                         select new Media
                         {
                             MediaId = (Guid)m.MediaId,
@@ -204,25 +247,25 @@ namespace RAPPTest
                             Description = m.Description
                         };
 
-            this.ElementModelList = new List<Media>(query);
-            this.ElementModel = ElementModelList[0];
-            fullScreenWindow.EnterFullScreen(ElementModel);
+            this.MediaModelList = new List<Media>(query);
+            this.MediaModel = MediaModelList[0];
+            _fullScreenWindow.EnterFullScreen(MediaModel);
         }
 
         public void EnterFullScreen(Media e)
         {
-            fullScreenWindow.EnterFullScreen(e);
+            _fullScreenWindow.EnterFullScreen(e);
         }
 
-        public Media getElementModel
+        public Media getMedia
         {
-            get { return elementModel; }
+            get { return _media; }
         }
 
         //
         public WPFWindow getWPFWindow
         {
-            get { return fullScreenWindow; }
+            get { return _fullScreenWindow; }
         }
 
         public class WPFWindow : Window
@@ -233,8 +276,6 @@ namespace RAPPTest
 
             private string folderName;
             private string keyName;
-
-            private bool isAnimated;
 
             private ScaleTransform scale;
 
@@ -261,53 +302,24 @@ namespace RAPPTest
                 ResizeMode = ResizeMode.NoResize;
 
                 this.isOpen = false;
-                //this.KeyUp += new KeyEventHandler(WindowKeyUp);
-                this.MouseMove += new MouseEventHandler(WindowMouseMove);
 
                 dynamicViewbox = new Viewbox();
                 dynamicViewbox.StretchDirection = StretchDirection.Both;
                 dynamicViewbox.Stretch = Stretch.Uniform;
 
                 this.Content = dynamicViewbox;
-
-                this.isAnimated = false;
             }
 
-            private void WindowMouseMove(Object sender, MouseEventArgs e)
-            {
-                if (isAnimated)
-                {
-                    isAnimated = false;
 
-                    // this.Dispatcher.Invoke(new Action(() => this.Hide()));
-                    this.Hide();
-                }
-            }
-
-            public void EnterFullScreenNormal(Media elementModel, bool animate)
-            {
-                this.Show();
-                isOpen = true;
-                if (elementModel != null)
-                {
-                    this.SetViewboxContent(elementModel, 1);
-                }
-
-                if (animate)
-                {
-                    isAnimated = true;
-                    while (isAnimated)
-                    {
-                        parent.PerformNextButtonClick();
-                        Thread.Sleep(INTERVAL);
-                    }
-                }
-            }
-
-            public void EnterFullScreen(Media elementModel)
+            public void EnterFullScreen(Media media)
             {
                 MainWindow window = (MainWindow)Application.Current.MainWindow;
-                EnterFullScreenNormal(elementModel, false);
+                this.Show();
+                isOpen = true;
+                if (media != null)
+                {
+                    this.SetViewboxContent(media, 1);
+                }
             }
 
             public bool IsOpen
@@ -325,15 +337,19 @@ namespace RAPPTest
                 this.Dispatcher.Invoke(new Action(() => dynamicViewbox.Child = null));
             }
 
-            public void SetViewboxContent(Media elementModel, int a)
+            public void SetViewboxContent(Media media, int a)
             {
+                //styling the controls
+
                 System.Windows.Controls.Grid myGrid = new Grid();
                 System.Windows.Controls.TextBlock titleTextBlock = new TextBlock();
                 titleTextBlock.TextAlignment = TextAlignment.Center;
                 titleTextBlock.Foreground = Brushes.White;
                 titleTextBlock.FontSize = 16;
-                int count = parent.getElementModelListCount();
-                int index = parent.elementModelList.FindIndex(e => e.MediaId == elementModel.MediaId) + 1;
+
+                //showing current item's index and total count
+                int count = parent.getMediaModelListCount();
+                int index = parent._mediaList.FindIndex(e => e.MediaId == media.MediaId) + 1;
                 titleTextBlock.Text = index.ToString() + " / " + count.ToString();
 
                 double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
@@ -341,6 +357,7 @@ namespace RAPPTest
                 double Width = screenWidth * 0.3;
                 double Height = screenHeight * 0.5;
 
+                //formatting index text block
                 Canvas indexCanvas = new Canvas();
                 indexCanvas.HorizontalAlignment = HorizontalAlignment.Left;
                 indexCanvas.VerticalAlignment = VerticalAlignment.Bottom;
@@ -351,6 +368,7 @@ namespace RAPPTest
 
                 myGrid.Dispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(delegate(Object state)
                 {
+                    //setting height and width for the index text block
                     var child = VisualTreeHelper.GetChild(dynamicViewbox, 0) as ContainerVisual;
                     var scale = child.Transform as ScaleTransform;
                     this.scale = scale;
@@ -365,35 +383,49 @@ namespace RAPPTest
                 if (this.isOpen)
                 {
                     indexCanvas.Children.Add(titleTextBlock);
-                    myGrid.Children.Add(elementModel.GetUIElement());
+                    myGrid.Children.Add(media.GetUIElement());
                     myGrid.Children.Add(indexCanvas);
                 }
 
                 dynamicViewbox.Child = myGrid;
             }
 
-            public void SetViewboxContent(Media elementModel)
+            public void PauseVideo(Media media)
             {
+                if (media.IsVideo())
+                {
+                    //
+                }
+
+            }
+
+            public void SetViewboxContent(Media media)
+            {
+                //styling the controls
+
                 System.Windows.Controls.TextBlock indexTextBlock = new TextBlock();
                 indexTextBlock.TextAlignment = TextAlignment.Center;
                 indexTextBlock.Foreground = Brushes.White;
                 indexTextBlock.FontSize = 16;
-                int count = parent.getElementModelListCount();
-                int index = parent.elementModelList.FindIndex(e => e.MediaId == elementModel.MediaId) + 1;
+                int count = parent.getMediaModelListCount();
+                int index = parent._mediaList.FindIndex(e => e.MediaId == media.MediaId) + 1;
                 indexTextBlock.Text = index.ToString() + " / " + count.ToString();
 
                 System.Windows.Controls.Grid myGrid = new Grid();
                 System.Windows.Controls.TextBlock titleTextBlock = new TextBlock();
                 titleTextBlock.FontSize = 36;
+
+                //showing title, description and index and formatting the controls
+
                 titleTextBlock.Foreground = Brushes.White;
-                titleTextBlock.Text = string.IsNullOrEmpty(elementModel.Title) ? string.Empty : elementModel.Title;
+                titleTextBlock.Text = string.IsNullOrEmpty(media.Title) ? string.Empty : media.Title;
 
                 System.Windows.Controls.TextBlock descTextBlock = new TextBlock();
                 descTextBlock.Foreground = Brushes.Red;
                 descTextBlock.FontStyle = FontStyles.Italic;
                 descTextBlock.FontSize = 20;
                 descTextBlock.TextWrapping = TextWrapping.Wrap;
-                descTextBlock.Text = string.IsNullOrEmpty(elementModel.Description) ? string.Empty : elementModel.Description;
+                descTextBlock.Text = string.IsNullOrEmpty(media.Description) ? string.Empty : media.Description;
 
                 double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
                 double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
@@ -436,10 +468,13 @@ namespace RAPPTest
                 }), null);
                 if (this.isOpen)
                 {
+
+                    //adding title, descrption and index on the canvas
+
                     indexCanvas.Children.Add(indexTextBlock);
                     titleDescCanvas.Children.Add(titleTextBlock);
                     titleDescCanvas.Children.Add(descTextBlock);
-                    myGrid.Children.Add(elementModel.GetUIElement());
+                    myGrid.Children.Add(media.GetUIElement());
                     myGrid.Children.Add(indexCanvas);
                     myGrid.Children.Add(titleDescCanvas);
                 }
@@ -454,10 +489,48 @@ namespace RAPPTest
                 System.Windows.Controls.TextBlock titleTextBlock = new TextBlock();
                 titleTextBlock.Foreground = Brushes.White;
                 titleTextBlock.Text = s;
-
                 myGrid.Children.Add(titleTextBlock);
-
                 dynamicViewbox.Child = myGrid;
+
+
+                //MainWindow window = (MainWindow)Application.Current.MainWindow;
+                //Label lblMediaFolderId = (Label)window.lblMediaFolderId;
+                //Label lblTempKey = (Label)window.lblTempKey;
+                //Guid mediaFolderId;
+                //RappTestEntities entity = new RappTestEntities();
+                //lblTempKey.Content = getFolderName();
+                ////string folderName = getFolderName();
+                //int folderNum;
+                //bool result = Int32.TryParse(lblTempKey.Content.ToString(), out folderNum);
+                //if (result)
+                //{
+                //    IEnumerable<Folder> folder = MediaView.GetFolderId(folderNum, folderName);
+                //    if (folder.Count() > 0)
+                //    {
+                //        foreach (var f in folder)
+                //        {
+                //            mediaFolderId = (Guid)f.MediaFolderId;
+                //        }
+                //    }
+                //}
+
+                //if (lblMediaFolderId.Content != string.Empty)
+                //{
+                //    var query = from m in entity.Media
+                //                where m.MediaFolderId == mediaFolderId
+                //                select new Media
+                //                {
+                //                    MediaId = (Guid)m.MediaId,
+                //                    FileName = m.FileName,
+                //                    Sequence = (Int32)m.Sequence,
+                //                    Title = m.Title,
+                //                    Description = m.Description
+                //                };
+
+                //    //this.MediaModelList = new List<Media>(query);
+                //    //this.MediaModel = MediaModelList[0];
+                //    //_fullScreenWindow.EnterFullScreen(MediaModel);
+                //}
             }
 
             public String getFolderName()
@@ -479,34 +552,32 @@ namespace RAPPTest
             {
                 this.keyName = keyName;
             }
-
         }
-
 
         public TabItem PlayTabItem
         {
-            get { return playTabItem; }
+            get { return _playTabItem; }
         }
 
         public Viewbox PlayViewbox
         {
-            get { return playViewbox; }
+            get { return _playViewbox; }
         }
 
-        public Media ElementModel
+        public Media MediaModel
         {
             get
             {
-                return elementModel;
+                return _media;
             }
             set
             {
-                elementModel = value;
-                if (elementModel != null)
+                _media = value;
+                if (_media != null)
                 {
-                    if (fullScreenWindow.IsVisible)
+                    if (_fullScreenWindow.IsVisible)
                     {
-                        fullScreenWindow.SetViewboxContent(elementModel, 1);
+                        _fullScreenWindow.SetViewboxContent(_media, 1);
                     }
                 }
 
@@ -515,21 +586,21 @@ namespace RAPPTest
 
         // TODO: Replace with actual caching
 
-        public List<Media> ElementModelList
+        public List<Media> MediaModelList
         {
             get
             {
-                return elementModelList;
+                return _mediaList;
             }
             set
             {
-                if (elementModelList != value)
+                if (_mediaList != value)
                 {
-                    elementModelList = value;
+                    _mediaList = value;
 
-                    if (elementModelList.Count() > 0)
+                    if (_mediaList.Count() > 0)
                     {
-                        ElementModel = elementModelList[0];
+                        MediaModel = _mediaList[0];
                     }
                 }
             }

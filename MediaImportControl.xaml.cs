@@ -89,6 +89,8 @@ namespace RAPPTest
                 if (query.Count() > 0)
                     lastSequence = Convert.ToInt32(query.Max());
 
+                //checking if any file has been dropped on the grid
+
                 if (e.Data is DataObject && ((DataObject)e.Data).ContainsFileDropList())
                 {
                     foreach (string filePath in ((DataObject)e.Data).GetFileDropList())
@@ -103,6 +105,8 @@ namespace RAPPTest
                         m.MediaFolderId = mediaFolderId;
                         lstMedia.Add(m);
                     }
+
+                    //inserting images and binding the grid again
                     MediaView.InsertImages(lstMedia);
                     BindImages(mediaFolderId);
                 }
@@ -168,9 +172,12 @@ namespace RAPPTest
         {
             myClickWaitTimer.Start();
             ListBox item = (ListBox)sender;
-            Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
-            GetMediaByMediaId(mediaId, 2);
-            e.Handled = true;
+            if (item.SelectedItems.Count > 0)
+            {
+                Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
+                GetMediaByMediaId(mediaId, 2);
+                e.Handled = true;
+            }
         }
 
         /// <summary>
@@ -219,7 +226,7 @@ namespace RAPPTest
         }
 
         /// <summary>
-        /// this function shows image related data
+        /// this function shows image related data i.e. title, description etc.
         /// </summary>
         /// <param name="mediaId"></param>
         private void ShowData(Guid mediaId)
@@ -227,7 +234,10 @@ namespace RAPPTest
             MediaView mv = new MediaView();
             Medium m = mv.GetMediaByMediaId(mediaId); 
             MainWindow window = (MainWindow)Application.Current.MainWindow;
-            window.imgScript.Source = new BitmapImage(new Uri(System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "\\Images\\" + m.FileName));
+
+            //checking if file is video then replace the video extension with jpg to show as thumbnail
+            string fileName = Utilities.Utilities.IsVideo(m.FileName) ? Utilities.Utilities.ReplaceVideoExtension(m.FileName) : m.FileName;
+            window.imgScript.Source = new BitmapImage(new Uri(System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "\\Media\\" + fileName));
             window.lblOrganizerMediaId.Content = mediaId;
             window.txtTitle.Text = m.Title;
             window.txtDescription.Text = m.Description;

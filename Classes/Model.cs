@@ -43,13 +43,12 @@ namespace RAPPTest
     }
 
     [Serializable()]
-    public class ElementModel : Model
+    public class MediaModel : Model
     {
-        private static string ROOT = "";
-        private static string thumbROOT = "";
+        private static string _root = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "//Media//";
 
-        private static string[] IMAGE_FORMATS = new string[] { ".bmp", ".gif", ".jpg", ".jpeg", ".tif" };
-        private static string[] VIDEO_FORMATS = new string[] { ".avi", ".flv", ".mov", ".mp4", ".mpg", ".wmv" };
+        private static string[] _imageFormats = new string[] { ".bmp", ".gif", ".jpg", ".jpeg", ".tif" };
+        private static string[] _videoFormats = new string[] { ".avi", ".flv", ".mov", ".mp4", ".mpg", ".wmv" };
 
         private Media element;
         //private CellModel cellModel;
@@ -57,7 +56,7 @@ namespace RAPPTest
         private string source;
 
         //Deserialization constructor.
-        public ElementModel(SerializationInfo info, StreamingContext ctxt)
+        public MediaModel(SerializationInfo info, StreamingContext ctxt)
 		{
 			//Get the values from info and assign them to the appropriate properties
             element = (Media)info.GetValue("element", typeof(Media));
@@ -65,21 +64,16 @@ namespace RAPPTest
 		}
 		
 
-        private static string GetName(string source, string targetWithoutExt)
-        {
-            string ext = Path.GetExtension(source);
-            return targetWithoutExt + ext;
-        }
-
-
         public bool IsImage()
         {
-            return IMAGE_FORMATS.Contains(Path.GetExtension(element.FileName).ToLower());
+            //checking if the file is an image
+            return _imageFormats.Contains(Path.GetExtension(element.FileName).ToLower());
         }
 
         public bool IsVideo()
         {
-            return VIDEO_FORMATS.Contains(Path.GetExtension(element.FileName).ToLower());
+            //checking if the file is a video
+            return _videoFormats.Contains(Path.GetExtension(element.FileName).ToLower());
         }
 
 
@@ -100,11 +94,6 @@ namespace RAPPTest
             return CreateImage(uri);
         }
 
-        public static bool IsValid(string path)
-        {
-            return FileValidator.IsValidFile(path);
-        }
-
         public static bool IsImage(Uri uri)
         {
             return CreateImage(uri) != null;
@@ -119,6 +108,7 @@ namespace RAPPTest
         {
             try
             {
+                //getting image to show as a slideshow when in the full screen mode
                 BitmapImage bmp = new BitmapImage();
                 bmp.BeginInit();
                 bmp.UriSource = uri;
@@ -139,6 +129,7 @@ namespace RAPPTest
         {
             try
             {
+                //creating the video to play when in the fullscreen mode.
                 MediaElement video = new MediaElement();
                 
                 video.BeginInit();
@@ -153,33 +144,9 @@ namespace RAPPTest
             }
         }
 
-        public Image GetImageThumbnail()
-        {
-            return GetImage();
-        }
-
-        public Image ScriptTabGetUIElement()
-        {
-            Uri sourceUri = new Uri(Source, UriKind.Absolute);
-            string source = Source.ToString();
-            string filenameWithoutExtension = Path.GetFileNameWithoutExtension(source);
-            if (IsImage())
-            {
-                return GetImageByUri(sourceUri);
-            }
-            else
-            {
-                string fullPath = Path.Combine("", filenameWithoutExtension + ".jpg");
-                return GetImageByUri(new Uri(fullPath));
-            }
-        }
-
-
-        /* Siwei added end */
-
-
         public UIElement GetUIElement()
         {
+            // checking if its an image then get the image otherwise get the video
             if (IsImage())
             {
                 return GetImage();
@@ -194,16 +161,6 @@ namespace RAPPTest
             }
         }
 
-      
-        public Media Element
-        {
-            get { return element; }
-        }
-
-        public Guid Id
-        {
-            get { return element.MediaId; }
-        }
 
         // source can either refer to absolute path, in case its the original
         // or to relative path, in case its transferred into our file folder
@@ -211,175 +168,9 @@ namespace RAPPTest
         {
             get
             {
-                if (IsSourceInternal)
-                {
-                    return Path.GetFullPath(Path.Combine(ROOT, source));
-                }
-                else
-                {
-                    return source;
-                }
+                 return Path.GetFullPath(Path.Combine(_root, source));
             }
         }
 
-        // Siwei added 23 Aug 2013
-        // defines thumbnail source
-        public string ThumbSource
-        {
-            get
-            {
-                if (IsSourceInternal)
-                {
-                    return Path.GetFullPath(Path.Combine(thumbROOT, source));
-                }
-                else
-                {
-                    return source;
-                }
-             }
-        }
-
-        public bool IsSourceExternal
-        {
-            get { return File.Exists(source); }
-        }
-
-        public bool IsSourceInternal
-        {
-            get { return !IsSourceExternal; }
-        }
-
-    }
-
-
-    public class ClientIdleHandler : IDisposable
-    {
-        public bool IsActive { get; set; }
-
-        int _hHookKbd;
-        int _hHookMouse;
-
-        public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
-        public event HookProc MouseHookProcedure;
-        public event HookProc KbdHookProcedure;
-
-        //Use this function to install thread-specific hook.
-        [DllImport("user32.dll", CharSet = CharSet.Auto,
-             CallingConvention = CallingConvention.StdCall)]
-        public static extern int SetWindowsHookEx(int idHook, HookProc lpfn,
-            IntPtr hInstance, int threadId);
-
-        //Call this function to uninstall the hook.
-        [DllImport("user32.dll", CharSet = CharSet.Auto,
-             CallingConvention = CallingConvention.StdCall)]
-        public static extern bool UnhookWindowsHookEx(int idHook);
-
-        //Use this function to pass the hook information to next hook procedure in chain.
-        [DllImport("user32.dll", CharSet = CharSet.Auto,
-             CallingConvention = CallingConvention.StdCall)]
-        public static extern int CallNextHookEx(int idHook, int nCode,
-            IntPtr wParam, IntPtr lParam);
-
-        //Use this hook to get the module handle, needed for WPF environment
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr GetModuleHandle(string lpModuleName);
-
-        public enum HookType : int
-        {
-            GlobalKeyboard = 13,
-            GlobalMouse = 14
-        }
-
-        public int MouseHookProc(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            //user is active, at least with the mouse
-            IsActive = true;
-
-            //just return the next hook
-            return CallNextHookEx(_hHookMouse, nCode, wParam, lParam);
-        }
-
-        public int KbdHookProc(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            //user is active, at least with the keyboard
-            IsActive = true;
-
-            //just return the next hook
-            return CallNextHookEx(_hHookKbd, nCode, wParam, lParam);
-        }
-
-        public void Start()
-        {
-            using (var currentProcess = Process.GetCurrentProcess())
-            using (var mainModule = currentProcess.MainModule)
-            {
-
-                if (_hHookMouse == 0)
-                {
-                    // Create an instance of HookProc.
-                    MouseHookProcedure = new HookProc(MouseHookProc);
-                    // Create an instance of HookProc.
-                    KbdHookProcedure = new HookProc(KbdHookProc);
-
-                    //register a global hook
-                    _hHookMouse = SetWindowsHookEx((int)HookType.GlobalMouse,
-                                                  MouseHookProcedure,
-                                                  GetModuleHandle(mainModule.ModuleName),
-                                                  0);
-                    if (_hHookMouse == 0)
-                    {
-                        Close();
-                        throw new ApplicationException("SetWindowsHookEx() failed for the mouse");
-                    }
-                }
-
-                if (_hHookKbd == 0)
-                {
-                    //register a global hook
-                    _hHookKbd = SetWindowsHookEx((int)HookType.GlobalKeyboard,
-                                                KbdHookProcedure,
-                                                GetModuleHandle(mainModule.ModuleName),
-                                                0);
-                    if (_hHookKbd == 0)
-                    {
-                        Close();
-                        throw new ApplicationException("SetWindowsHookEx() failed for the keyboard");
-                    }
-                }
-            }
-        }
-
-        public void Close()
-        {
-            if (_hHookMouse != 0)
-            {
-                bool ret = UnhookWindowsHookEx(_hHookMouse);
-                if (ret == false)
-                {
-                    throw new ApplicationException("UnhookWindowsHookEx() failed for the mouse");
-                }
-                _hHookMouse = 0;
-            }
-
-            if (_hHookKbd != 0)
-            {
-                bool ret = UnhookWindowsHookEx(_hHookKbd);
-                if (ret == false)
-                {
-                    throw new ApplicationException("UnhookWindowsHookEx() failed for the keyboard");
-                }
-                _hHookKbd = 0;
-            }
-        }
-
-        #region IDisposable Members
-
-        public void Dispose()
-        {
-            if (_hHookMouse != 0 || _hHookKbd != 0)
-                Close();
-        }
-
-        #endregion
     }
 }

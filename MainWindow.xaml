@@ -172,6 +172,7 @@
                         </Grid.ColumnDefinitions>
                         <Label FontSize="20" Height="60" Width="50" Name="activeBtnImport" Content="A" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="#FFF5F500" Grid.ColumnSpan="2" Background="#FFA600A6"></Label>
                         <Label FontSize="1" Grid.Column="1"  Height="60" Width="50" Name="lblMediaFolderId" Visibility="Collapsed"></Label>
+                        <Label Name="lblTempKey" Visibility="Collapsed"></Label>
                         <Label FontSize="1" Grid.Column="1"  Height="60" Width="50" Name="lblScriptMediaId" Visibility="Collapsed"></Label>
                         <Label FontSize="1" Grid.Column="1"  Height="60" Width="50" Name="lblOrganizerMediaId" Visibility="Collapsed"></Label>
                         <Border  Margin="29.6,2,0,2" Grid.Column="1" BorderThickness="1" Name="textBorderImport" HorizontalAlignment="Left">
@@ -226,27 +227,51 @@
                             <Grid Grid.Column="0" Name="gridButtonLowerImport" Height="37">
                                 <Button Grid.Column="13" Content="^" FontSize="24" FontFamily="Arial" FontWeight="Bold" Margin="2,0,0,0"></Button>
                             </Grid>
-                            <Grid Grid.Column="1" Margin="5 0 10 0">
+                            <Grid Grid.Column="1" Margin="40 0 10 0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="22" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="22" />
                                     <ColumnDefinition Width="22" />
                                 </Grid.ColumnDefinitions>
 
-                                <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center" Margin="2,0,0,0">
-                                    <Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0"  MouseUp="iconZoomOut_MouseUp" Name="iconZoomOutImport">
+                                <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,0,0">
+                                    <!--<Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0"  MouseUp="iconZoomOut_MouseUp" Name="iconZoomOutImport">
                                         <TextBlock Text="-" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial" FontSize="14" />
-                                    </Border>
+                                    </Border>-->
+                                    <Button Click="iconZoomOut_MouseUp">
+                                        <StackPanel>
+                                            <Image Source="/Resources/small.png" />
+                                        </StackPanel>
+                                        <Button.Background>
+                                            <SolidColorBrush Color="Gray" Opacity="0.0" />
+                                        </Button.Background>
+                                    </Button>
                                 </StackPanel>
-                                <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,2,0">
-                                    <Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0"  MouseUp="iconZoomMax_MouseUp" Name="iconZoomMaxImport">
+                                <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,0,0">
+                                    <!--<Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0"  MouseUp="iconZoomMax_MouseUp" Name="iconZoomMaxImport">
                                         <TextBlock Text="++" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial" FontSize="14" />
-                                    </Border>
+                                    </Border>-->
+                                    <Button Click="iconZoomMax_MouseUp" >
+                                        <StackPanel>
+                                            <Image Source="/Resources/large.png" />
+                                        </StackPanel>
+                                        <Button.Background>
+                                            <SolidColorBrush Color="Gray" Opacity="0.0" />
+                                        </Button.Background>
+                                    </Button>
                                 </StackPanel>
-                                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="0,2,0,0">
-                                    <Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.Column="0"  MouseUp="iconZoomIn_MouseUp" Name="iconZoomInImport">
+                                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,0,0">
+                                    <!--<Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.Column="0"  MouseUp="iconZoomIn_MouseUp" Name="iconZoomInImport">
                                         <TextBlock Text=" + " Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial" FontSize="14" />
-                                    </Border>
+                                    </Border>-->
+                                    <Button x:Name="btnOrgZoomIn" Click="iconZoomIn_MouseUp">
+                                        <StackPanel>
+                                            <Image Source="/Resources/medium.png" />
+                                        </StackPanel>
+                                        <Button.Background>
+                                            <SolidColorBrush Color="Gray" Opacity="0.0" />
+                                        </Button.Background>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -329,26 +354,50 @@
                             <Grid Grid.Column="0" Name="gridButtonLower" Height="37">
                                 <!--<Button Grid.Column="13" Content="^" FontSize="24" FontFamily="Arial" FontWeight="Bold" Margin="2,0,0,0"></Button>-->
                             </Grid>
-                            <Grid Grid.Column="1" Margin="5 0 10 0">
+                            <Grid Grid.Column="1" Margin="40 0 10 0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="22" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="22" />
                                     <ColumnDefinition Width="22" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center" Margin="2,0,0,0">
-                                    <Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0"  MouseUp="iconZoomOut_MouseUp" Name="iconZoomOut">
+                                    <!--<Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0"  MouseUp="iconZoomOut_MouseUp" Name="iconZoomOut">
                                         <TextBlock Text="-" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial" FontSize="14" />
-                                    </Border>
+                                    </Border>-->
+                                    <Button Click="iconZoomOut_MouseUp">
+                                        <StackPanel>
+                                            <Image Source="/Resources/small.png" />
+                                        </StackPanel>
+                                        <Button.Background>
+                                            <SolidColorBrush Color="Gray" Opacity="0.0" />
+                                        </Button.Background>
+                                    </Button>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,2,0">
-                                    <Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0"  MouseUp="iconZoomMax_MouseUp" Name="iconZoomMax">
+                                    <Button Click="iconZoomMax_MouseUp" >
+                                        <StackPanel>
+                                            <Image Source="/Resources/large.png" />
+                                        </StackPanel>
+                                        <Button.Background>
+                                            <SolidColorBrush Color="Gray" Opacity="0.0" />
+                                        </Button.Background>
+                                    </Button>
+                                    <!--<Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0"  MouseUp="iconZoomMax_MouseUp" Name="iconZoomMax">
                                         <TextBlock Text="++" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial" FontSize="14" />
-                                    </Border>
+                                    </Border>-->
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,2,0">
-                                    <Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.Column="0"  MouseUp="iconZoomIn_MouseUp" Name="iconZoomIn">
+                                    <Button Click="iconZoomMax_MouseUp">
+                                        <StackPanel>
+                                            <Image Source="/Resources/medium.png" />
+                                        </StackPanel>
+                                        <Button.Background>
+                                            <SolidColorBrush Color="Gray" Opacity="0.0" />
+                                        </Button.Background>
+                                    </Button>
+                                    <!--<Border CornerRadius="10" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.Column="0"  MouseUp="iconZoomIn_MouseUp" Name="iconZoomIn">
                                         <TextBlock Text=" + " Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial" FontSize="14" />
-                                    </Border>
+                                    </Border>-->
                                 </StackPanel>
                             </Grid>
                         </Grid>

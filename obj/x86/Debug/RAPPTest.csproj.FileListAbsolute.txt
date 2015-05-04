@@ -6,6 +6,7 @@ C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\bin\Debug\Mi
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\bin\Debug\Microsoft.WindowsAPICodePack.xml
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
+C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest.csprojResolveAssemblyReference.cache
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\Resources\Button.baml
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\MainWindow.g.cs
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\MediaImportControl.g.cs
@@ -21,4 +22,3 @@ C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debu
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest.csproj.GenerateResource.Cache
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest.exe
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest.pdb
-C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest.csprojResolveAssemblyReference.cache
