@@ -117,12 +117,14 @@ namespace RAPPTest
             {
                 //showing the folder number and name is full screen after a key is pressed
                 string keyName = e.Key.ToString();
-                BindMediaList(this.getWPFWindow.getFolderName(), keyName);
                 this.getWPFWindow.SetViewboxContent(this.getWPFWindow.getFolderName() + keyName);
                 this.PerformKeyChange(keyName);
                 this.getWPFWindow.SetKeyName(keyName);
                 this.getWPFWindow.KeyUp -= new KeyEventHandler(WindowKeyUpAfter0_9);
                 this.getWPFWindow.KeyUp += new KeyEventHandler(KeyUpA_Z);
+                
+                BindMediaList(this.getWPFWindow.getFolderName(), keyName);
+            
             }
             else if (e.Key == System.Windows.Input.Key.Enter)
             {
@@ -491,46 +493,6 @@ namespace RAPPTest
                 titleTextBlock.Text = s;
                 myGrid.Children.Add(titleTextBlock);
                 dynamicViewbox.Child = myGrid;
-
-
-                //MainWindow window = (MainWindow)Application.Current.MainWindow;
-                //Label lblMediaFolderId = (Label)window.lblMediaFolderId;
-                //Label lblTempKey = (Label)window.lblTempKey;
-                //Guid mediaFolderId;
-                //RappTestEntities entity = new RappTestEntities();
-                //lblTempKey.Content = getFolderName();
-                ////string folderName = getFolderName();
-                //int folderNum;
-                //bool result = Int32.TryParse(lblTempKey.Content.ToString(), out folderNum);
-                //if (result)
-                //{
-                //    IEnumerable<Folder> folder = MediaView.GetFolderId(folderNum, folderName);
-                //    if (folder.Count() > 0)
-                //    {
-                //        foreach (var f in folder)
-                //        {
-                //            mediaFolderId = (Guid)f.MediaFolderId;
-                //        }
-                //    }
-                //}
-
-                //if (lblMediaFolderId.Content != string.Empty)
-                //{
-                //    var query = from m in entity.Media
-                //                where m.MediaFolderId == mediaFolderId
-                //                select new Media
-                //                {
-                //                    MediaId = (Guid)m.MediaId,
-                //                    FileName = m.FileName,
-                //                    Sequence = (Int32)m.Sequence,
-                //                    Title = m.Title,
-                //                    Description = m.Description
-                //                };
-
-                //    //this.MediaModelList = new List<Media>(query);
-                //    //this.MediaModel = MediaModelList[0];
-                //    //_fullScreenWindow.EnterFullScreen(MediaModel);
-                //}
             }
 
             public String getFolderName()
