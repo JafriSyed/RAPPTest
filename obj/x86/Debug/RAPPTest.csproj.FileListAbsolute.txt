@@ -22,3 +22,5 @@ C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debu
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest.csproj.GenerateResource.Cache
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest.exe
 C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\RAPPTest.pdb
+C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\showcaseList.g.cs
+C:\Users\Qu\Documents\Visual Studio 2010\Projects\RAPPTest\RAPPTest\obj\x86\Debug\showcaseList.baml

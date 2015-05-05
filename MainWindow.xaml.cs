@@ -229,7 +229,21 @@ namespace RAPPTest
             IEnumerable<Folder> folder = MediaView.GetFolderId(folderNum, folderName);
             foreach (var f in folder)
             {
-                lblMediaFolderId.Content = f.MediaFolderId;            
+                lblMediaFolderId.Content = f.MediaFolderId;
+                if (this.tabControl.SelectedIndex == 1)
+                {
+                    if (!string.IsNullOrEmpty(f.Title))
+                        txtImportHeader.Text = f.Title;
+                    else
+                        txtImportHeader.Text = "Import images and videos";
+                }  
+                else
+                {
+                    if (!string.IsNullOrEmpty(f.Title))
+                        txtOrganizerHeader.Text = f.Title;
+                    else
+                        txtOrganizerHeader.Text = "Organize your media collection";
+                }
             }
         }
 
@@ -385,7 +399,7 @@ namespace RAPPTest
             return;
         }
 
-        private void btnUpdateSequence_Click(object sender, RoutedEventArgs e)
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
             //updating sequence of the images
             List<Medium> lstMedium = new List<Medium>();
@@ -407,6 +421,10 @@ namespace RAPPTest
 
             //binding list again.
             mic.BindImages(mediaFolderId);
+
+            string title = mv.UpdateMediaFolderTitle(mediaFolderId, txtImportHeader.Text);
+            txtImportHeader.Text = title;
+
         }
          
         /// <summary>

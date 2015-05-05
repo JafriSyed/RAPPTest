@@ -77,6 +77,35 @@ namespace RAPPTest
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="mediaId"></param>
+        /// <returns></returns>
+        public string UpdateMediaFolderTitle(Guid mediaFolderId, string title)
+        {
+            try
+            {
+                //getting media elements by media id
+                RappTestEntities rappEntity = new RappTestEntities();
+                var query = from m in rappEntity.MediaFolders
+                            where m.MediaFolderId == mediaFolderId
+                            select m;
+
+                foreach (var mediaFlder in query)
+                {
+                    mediaFlder.Title = title;
+                }
+
+                rappEntity.SaveChanges();
+                return title;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="lstMedia"></param>
         public void UpdateSequence(List<Medium> lstMedia)
         {
@@ -140,6 +169,43 @@ namespace RAPPTest
                 var query = from m in rappEntity.Media
                             join mf in rappEntity.MediaFolders
                             on m.MediaFolderId equals mf.MediaFolderId
+                            select new Media
+                            {
+                                FileName = m.FileName,
+                                FolderNum = (Int32)mf.FolderNum,
+                                FolderName = mf.FolderName,
+                                Sequence = (Int32)m.Sequence
+                            };
+                if (query.Count() > 0)
+                {
+                    _mediaList = new ObservableCollection<Media>(query);
+                    AddDirectoryToFileName(_mediaList);
+                }
+                return _mediaList;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public ObservableCollection<Media> GetImagesByFolderNumber(int number)
+        {
+            try
+            {
+                //Getting all the images to show on the image view UI.
+                RappTestEntities rappEntity = new RappTestEntities();
+
+                var query = from m in rappEntity.Media
+                            join mf in rappEntity.MediaFolders
+                            on m.MediaFolderId equals mf.MediaFolderId
+                            where mf.FolderNum == number
                             select new Media
                             {
                                 FileName = m.FileName,

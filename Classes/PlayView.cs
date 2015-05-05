@@ -20,6 +20,7 @@ namespace RAPPTest
         private TabItem _playTabItem;
         private Viewbox _playViewbox;
         private WPFWindow _fullScreenWindow;
+        private showcaseList _showcase = null;
 
         public PlayView(TabItem playTabItem, Viewbox playViewbox)
         {
@@ -80,11 +81,6 @@ namespace RAPPTest
             }
         }
 
-        private void showcaseKeyUp(object sender, KeyEventArgs e)
-        {
-
-        }
-
         private void KeyUp0_9(object sender, KeyEventArgs e)
         {
             if (e.Key >= System.Windows.Input.Key.D0 && e.Key <= System.Windows.Input.Key.D9)
@@ -113,10 +109,10 @@ namespace RAPPTest
 
         private void WindowKeyUpAfter0_9(object sender, KeyEventArgs e)
         {
+            string keyName = e.Key.ToString();
             if (e.Key >= System.Windows.Input.Key.A && e.Key <= System.Windows.Input.Key.Z)
             {
                 //showing the folder number and name is full screen after a key is pressed
-                string keyName = e.Key.ToString();
                 this.getWPFWindow.SetViewboxContent(this.getWPFWindow.getFolderName() + keyName);
                 this.PerformKeyChange(keyName);
                 this.getWPFWindow.SetKeyName(keyName);
@@ -128,14 +124,28 @@ namespace RAPPTest
             }
             else if (e.Key == System.Windows.Input.Key.Enter)
             {
+                this._showcase = new showcaseList(this.getWPFWindow.getFolderName());
                 double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
                 double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+                this._showcase.Width = screenWidth * 0.95;
+                this._showcase.Height = screenHeight * 0.9;
+                double windowWidth = this._showcase.Width;
+                double windowHeight = this._showcase.Height;
+                this._showcase.Left = (screenWidth / 2) - (windowWidth / 2);
+                this._showcase.Top = 0;
+                this._showcase.WindowStyle = WindowStyle.None;
+                this._showcase.Show();
+                this._showcase.ShowActivated = true;
                 this.getWPFWindow.KeyUp -= new KeyEventHandler(WindowKeyUpAfterA_Z);
+                this._showcase.KeyUp += new KeyEventHandler(showcaseKeyUp);
             }
         }
 
         private void BindMediaList(string folderName, string keyName)
         {
+            //Binding media list again when the folder is changed via key press for e.g user presses 2A 
+            //then all the images against 2A will be fetched.
+
             MainWindow window = (MainWindow)Application.Current.MainWindow;
             Label lblMediaFolderId = (Label)window.lblMediaFolderId;
             IEnumerable<Folder> folder = MediaView.GetFolderId(Convert.ToInt32(folderName), keyName);
@@ -212,6 +222,14 @@ namespace RAPPTest
                 {
                     MediaModel = _mediaList.FirstOrDefault();
                 }
+            }
+        }
+
+        private void showcaseKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Escape)
+            {
+                this._showcase.Hide();
             }
         }
 
@@ -456,7 +474,7 @@ namespace RAPPTest
                     indexCanvas.Height = indexCanvas.ActualHeight / scale.ScaleY;
                     titleTextBlock.Padding = new Thickness(0, 0, 0, 0); //titleTextBlock is title
 
-                    titleDescCanvas.Width = indexCanvas.ActualWidth / scale.ScaleX;
+                    titleDescCanvas.Width = (indexCanvas.ActualWidth * 3);// (scale.ScaleX + scale.ScaleY);
                     titleDescCanvas.Height = indexCanvas.ActualHeight / scale.ScaleY;
 
                     descTextBlock.Padding = new Thickness(5, indexCanvas.Height, 0, 0); //descTextBlock is description

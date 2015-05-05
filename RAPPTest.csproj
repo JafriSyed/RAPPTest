@@ -103,6 +103,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RappTestModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="showcaseList.xaml.cs">
+      <DependentUpon>showcaseList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\Utilities.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -121,6 +124,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\Button.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="showcaseList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

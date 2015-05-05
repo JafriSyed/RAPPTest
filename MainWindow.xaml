@@ -176,14 +176,14 @@
                         <Label FontSize="1" Grid.Column="1"  Height="60" Width="50" Name="lblScriptMediaId" Visibility="Collapsed"></Label>
                         <Label FontSize="1" Grid.Column="1"  Height="60" Width="50" Name="lblOrganizerMediaId" Visibility="Collapsed"></Label>
                         <Border  Margin="29.6,2,0,2" Grid.Column="1" BorderThickness="1" Name="textBorderImport" HorizontalAlignment="Left">
-                            <TextBox Name="cellNameImportTextBox" IsReadOnly="false" Text="Import images and videos"  Foreground="#FFCCF600" FontSize="18" FontFamily="Arial" VerticalContentAlignment="Center"  Background="Transparent" Margin="2,2.2,2,2"  BorderThickness="0" BorderBrush="#FFCECECE" Width="302"></TextBox>
+                            <TextBox Name="txtImportHeader" IsReadOnly="false" Text="Import images and videos"  Foreground="#FFCCF600" FontSize="18" FontFamily="Arial" VerticalContentAlignment="Center"  Background="Transparent" Margin="2,2.2,2,2"  BorderThickness="0" BorderBrush="#FFCECECE" Width="302"></TextBox>
                             <Border.BorderBrush>
                                 <SolidColorBrush />
                             </Border.BorderBrush>
                         </Border>
                     </Grid>
                     <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Grid.ColumnSpan="1"  Grid.RowSpan="2">
-                        <Button Name="btnUpdateSequence" Content="Update Seq" Click="btnUpdateSequence_Click" Width="120" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,15,0,0"></Button>
+                        <Button Name="btnUpdate" Content="Update" Click="btnUpdate_Click" Width="120" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,15,0,0"></Button>
                         <Label Content="Screen saver:" Height="28" HorizontalAlignment="Left"  Name="label1" VerticalAlignment="Top" Foreground="White" Width="96" Margin="160,10,0,0" />
                         <ComboBox Height="23" HorizontalAlignment="Left"  Name="screenSaverTimer" VerticalAlignment="Top" Width="120" Margin="261,15,0,0" />
                         <Label Content="sec(s)" Height="28" HorizontalAlignment="Left" Name="label2" VerticalAlignment="Top" Foreground="White" Width="46" Margin="386,10,0,0" />
@@ -301,7 +301,7 @@
                         <Label FontSize="20" Margin="3,0,712,0" Height="60" Width="50" Name="activeBtn" Content="A" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="#FFF5F500" Grid.ColumnSpan="2" Background="#FFA600A6">
                         </Label>
                         <Border  Margin="30 2 2 2" HorizontalAlignment="Left" Grid.Column="1" BorderThickness="1" Name="textBorder">
-                            <TextBox Name="cellNameOrganizerTextBox" IsReadOnly="false" Text="Organize your media collection"  Foreground="#FFCCF600" Background="Transparent" FontSize="18" FontFamily="Arial" VerticalContentAlignment="Center"  Margin="2 2 2 2"  BorderThickness="0" BorderBrush="#FFCECECE" Width="674"></TextBox>
+                            <TextBox Name="txtOrganizerHeader" IsReadOnly="false" Text="Organize your media collection"  Foreground="#FFCCF600" Background="Transparent" FontSize="18" FontFamily="Arial" VerticalContentAlignment="Center"  Margin="2 2 2 2"  BorderThickness="0" BorderBrush="#FFCECECE" Width="674"></TextBox>
                             <Border.BorderBrush>
                                 <SolidColorBrush />
                             </Border.BorderBrush>
