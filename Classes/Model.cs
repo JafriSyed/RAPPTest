@@ -131,7 +131,7 @@ namespace RAPPTest
             {
                 //creating the video to play when in the fullscreen mode.
                 MediaElement video = new MediaElement();
-                
+                video.Name = "videoPlayer";
                 video.BeginInit();
                 video.Source = uri;
                 

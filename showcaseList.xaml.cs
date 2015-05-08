@@ -29,11 +29,8 @@ namespace RAPPTest
             RappTestEntities entity = new RappTestEntities();
             MediaView mv =new MediaView();
             ObservableCollection<Media> lstMedia = mv.GetImagesByFolderNumber(Convert.ToInt32(keyName));
-            mediaListBox.ItemsSource = lstMedia;
-            
-        }
-
-        
+            mediaListBox.ItemsSource = lstMedia;         
+        }  
     }
 }
 

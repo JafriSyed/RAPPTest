@@ -9,21 +9,19 @@
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Loaded="UserControl_Loaded"
              xmlns:my="clr-namespace:RAPPTest">
     <StackPanel>
-
-
-
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Name="dndSrollbar" >
-            <Grid x:Name="theGrid">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"   Name="dndSrollbar" >
+            <Grid x:Name="theGrid" Height="1400" Width="600">
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <ListBox x:Name="lstImageGallery" Background="Transparent"
-                 MouseDoubleClick="lstImageGallery_MouseDoubleClick"
+                 
                  MouseRightButtonUp="lstImageGallery_MouseRightButtonUp"
-                 MouseLeftButtonUp="lstImageGallery_MouseLeftButtonUp"
-                 MouseLeftButtonDown="lstImageGallery_MouseLeftButtonDown"
+           
+                 PreviewMouseLeftButtonUp ="lstImageGallery_MouseLeftButtonDown"
+                 MouseDoubleClick="lstImageGallery_MouseDoubleClick"
                  BorderThickness="0"
                  Drop="OnDrop"
                  Margin="0,0,0,10" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -33,9 +31,9 @@
                                 <Border  Name="theGrid" Height="Auto" Grid.Row="0" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                                         BorderThickness="3" BorderBrush="White" Grid.Column="0">
                                     <Image Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="imgMedia"
-							   Margin="0 0 0 0">
+							   Margin="0 0 0 0" Width="50" Height="30">
                                         <Image.Source>
-                                            <BitmapImage UriSource="{Binding FileName}"  DecodePixelWidth="100" />
+                                            <BitmapImage UriSource="{Binding FileName}" />
                                         </Image.Source>
                                     </Image>
                                 </Border>
@@ -58,7 +56,7 @@
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <telerik:RadUniformGrid Columns="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            <telerik:RadUniformGrid Columns="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                     <telerik:ListBoxDragDrop.Behavior>

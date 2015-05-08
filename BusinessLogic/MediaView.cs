@@ -372,11 +372,12 @@ namespace RAPPTest
         {
             // this function loops to the list and concatenates directory to each file name.
             string appDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
-            string newFilePathForImages = appDirectory + "\\Media\\";
+            string newFilePathForImages = appDirectory + "\\Media\\Thumbnails\\";
             foreach (Media m in mediaList)
             {
                 string fileName = Utilities.Utilities.IsVideo(m.FileName) ? Utilities.Utilities.ReplaceVideoExtension(m.FileName) : m.FileName;
                 m.FileName = string.Format("{0}{1}", newFilePathForImages, fileName);
-            }        }
+            }
+        }
     }
 }

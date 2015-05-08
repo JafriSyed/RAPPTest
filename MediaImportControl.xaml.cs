@@ -24,6 +24,7 @@ using System.ComponentModel;
 using Telerik.Windows.DragDrop;
 using System.Collections;
 using System.Windows.Threading;
+using System.Timers;
 
 namespace RAPPTest
 {
@@ -35,14 +36,14 @@ namespace RAPPTest
     {
         private ObservableCollection<Media> _mediaObj = new ObservableCollection<Media>();
         private Media _selectedModel;
-
+        private bool mSingleClick;
         private ListBox _associatedObject;
-        private static DispatcherTimer myClickWaitTimer = new DispatcherTimer(new TimeSpan(0, 0, 0, 1), DispatcherPriority.Background,
-                                                                              mouseWaitTimer_Tick, Dispatcher.CurrentDispatcher);
-
+        private System.Windows.Threading.DispatcherTimer clickTimer = new System.Windows.Threading.DispatcherTimer();
+    
         public MediaImportControl()
         {
             InitializeComponent();
+            clickTimer.Tick += clickTimer_Tick;
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace RAPPTest
 
         protected virtual void Initialize()
         {
-          
+
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -74,26 +75,28 @@ namespace RAPPTest
 
         private void OnDrop(object sender, System.Windows.DragEventArgs e)
         {
-                //adding images to database after dropping them to the grid.
-            
-                MainWindow window = (MainWindow)Application.Current.MainWindow;
-                RappTestEntities mediaEntity = new RappTestEntities();
-                List<Media> lstMedia = new List<Media>();
-                MediaView mv = new MediaView();
-                Guid mediaFolderId = (Guid)window.lblMediaFolderId.Content;
-                var query = from m in
-                                mediaEntity.Media
-                            where m.MediaFolderId == mediaFolderId
-                            select m.Sequence;
-                int lastSequence = 0;
-                if (query.Count() > 0)
-                    lastSequence = Convert.ToInt32(query.Max());
+            //adding images to database after dropping them to the grid.
+            MainWindow window = (MainWindow)Application.Current.MainWindow;
+            RappTestEntities mediaEntity = new RappTestEntities();
+            List<Media> lstMedia = new List<Media>();
+            MediaView mv = new MediaView();
+            Guid mediaFolderId = (Guid)window.lblMediaFolderId.Content;
+            var query = from m in
+                            mediaEntity.Media
+                        where m.MediaFolderId == mediaFolderId
+                        select m.Sequence;
+            int lastSequence = 0;
+            if (query.Count() > 0)
+                lastSequence = Convert.ToInt32(query.Max());
 
-                //checking if any file has been dropped on the grid
+            //checking if any file has been dropped on the grid
 
-                if (e.Data is DataObject && ((DataObject)e.Data).ContainsFileDropList())
+            if (e.Data is DataObject && ((DataObject)e.Data).ContainsFileDropList())
+            {
+                foreach (string filePath in ((DataObject)e.Data).GetFileDropList())
                 {
-                    foreach (string filePath in ((DataObject)e.Data).GetFileDropList())
+
+                    if (Utilities.Utilities.IsImage(filePath) || Utilities.Utilities.IsVideo(filePath))
                     {
                         lastSequence++;
                         var fileName = filePath.ToString();
@@ -105,14 +108,12 @@ namespace RAPPTest
                         m.MediaFolderId = mediaFolderId;
                         lstMedia.Add(m);
                     }
-
-                    //inserting images and binding the grid again
-                    MediaView.InsertImages(lstMedia);
-                    BindImages(mediaFolderId);
                 }
-
+                //inserting images and binding the grid again
+                MediaView.InsertImages(lstMedia);
+                BindImages(mediaFolderId);
+            }
         }
-
 
         private void theGrid_DragLeave(object sender, System.Windows.DragEventArgs e)
         {
@@ -123,7 +124,6 @@ namespace RAPPTest
         {
             e.Handled = true;
         }
-
 
         /// <summary>
         /// this function binds the images to the list
@@ -155,31 +155,20 @@ namespace RAPPTest
         /// <param name="e"></param>
         private void lstImageGallery_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            myClickWaitTimer.Stop();
             ListBox item = (ListBox)sender;
             Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
             GetMediaByMediaId(mediaId, 3);
-            e.Handled = true;
-          
+            mSingleClick = false;
         }
-
-        /// <summary>
-        /// this event is called when user clicks on the image thumbnail and shows organizer tab.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void lstImageGallery_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void clickTimer_Tick(object sender, EventArgs e)
         {
-            myClickWaitTimer.Start();
-            ListBox item = (ListBox)sender;
-            if (item.SelectedItems.Count > 0)
+            if (mSingleClick)
             {
-                Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
-                GetMediaByMediaId(mediaId, 2);
-                e.Handled = true;
+                clickTimer.Stop();
+                mSingleClick = false;
+                MessageBox.Show("Single click");
             }
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -187,20 +176,24 @@ namespace RAPPTest
         /// <param name="e"></param>
         private void lstImageGallery_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-          
-        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void mouseWaitTimer_Tick(object sender, EventArgs e)
-        {
-            myClickWaitTimer.Stop();
-
-            // Handle Single Click Actions
-            //Trace.WriteLine("Single Click");
+            if (e.ClickCount < 2)
+            {
+                //mSingleClick = true; 
+                clickTimer.Interval = new TimeSpan(0, 0, 0, 0, 1800);
+                clickTimer.Start();
+                ListBox item = (ListBox)sender;
+                if (item.SelectedItems.Count > 0)
+                {
+                    Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
+                    GetMediaByMediaId(mediaId, 2);
+                }
+            }
+            else if (e.ClickCount == 2)
+            {
+                clickTimer.Stop();
+                mSingleClick = false; 
+            }
         }
 
         /// <summary>
@@ -211,7 +204,7 @@ namespace RAPPTest
         private void GetMediaByMediaId(Guid mediaId, int selectedIndex)
         {
             MainWindow window = (MainWindow)Application.Current.MainWindow;
-            
+
             if (selectedIndex == 2)
             {
                 window.tabControl.SelectedIndex = selectedIndex;
@@ -232,7 +225,7 @@ namespace RAPPTest
         private void ShowData(Guid mediaId)
         {
             MediaView mv = new MediaView();
-            Medium m = mv.GetMediaByMediaId(mediaId); 
+            Medium m = mv.GetMediaByMediaId(mediaId);
             MainWindow window = (MainWindow)Application.Current.MainWindow;
 
             //checking if file is video then replace the video extension with jpg to show as thumbnail

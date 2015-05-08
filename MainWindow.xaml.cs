@@ -69,15 +69,15 @@ namespace RAPPTest
 
         #endregion
 
-       
+
         #region Private Methods
 
         private void LoadScreenSaverControl()
         {
             this.screenSaverTimer.ItemsSource = Utilities.Utilities.GetTimerList();
-            this.screenSaverTimer.SelectedIndex = 2;
+            this.screenSaverTimer.SelectedIndex = 0;
         }
-       
+
         /// <summary>
         /// Gets system idle time to show screen saver
         /// </summary>
@@ -236,7 +236,7 @@ namespace RAPPTest
                         txtImportHeader.Text = f.Title;
                     else
                         txtImportHeader.Text = "Import images and videos";
-                }  
+                }
                 else
                 {
                     if (!string.IsNullOrEmpty(f.Title))
@@ -247,7 +247,7 @@ namespace RAPPTest
             }
         }
 
-   
+
 
         #endregion
 
@@ -275,7 +275,7 @@ namespace RAPPTest
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            if (GetIdleTime() > Convert.ToInt32(screenSaverTimer.SelectedValue) * 1000)  //10 secs, Time to wait before locking
+            if (GetIdleTime() > Convert.ToInt32(/*screenSaverTimer.SelectedValue*/10) * 1000)  //10 secs, Time to wait before locking
             {
                 ShowScreenSaver();
             }
@@ -288,14 +288,36 @@ namespace RAPPTest
             IEnumerable<Media> media = from m in rappRntity.Media
                                        where m.IsScreenSaver == true
                                        select new Media { FileName = m.FileName };
+            Viewbox dynamicViewbox = new Viewbox();
+            System.Windows.Controls.Grid myGrid = new Grid();
 
             if (media.Count() > 0)
-            { 
-                foreach(Media m in media)
-                    playView.EnterFullScreen(m);
+            {
+                foreach (Media m in media)
+                {
+                    MainWindow window = (MainWindow)Application.Current.MainWindow;
+                    this.Show();
+                    myGrid.Children.Add(m.GetUIElement());
+                }
             }
-            
+            dynamicViewbox.Child = myGrid;
             //MessageBox.Show("Screen Saver...");
+            //string appDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+            //string newFilePathForImages = appDirectory + "\\Media\\Thumbnails\\635666748266078880.jpg";
+            //BitmapImage img = new BitmapImage();
+            //img.UriSource = new Uri(newFilePathForImages);
+            //MainWindow mw = (MainWindow)Application.Current.MainWindow;
+            //var myPopup = new Popup
+            //{
+            //    Child = new Image
+            //    {
+            //        Source = img,
+            //        Stretch = Stretch.UniformToFill,
+            //        Height = 500,
+            //        Width = 500
+            //    }
+            //};
+            //myPopup.IsOpen = true; 
         }
 
         private void ImagebucketTab_MouseUp(object sender, MouseButtonEventArgs e)
@@ -335,7 +357,7 @@ namespace RAPPTest
                 ic.BindImages((Guid)lblMediaFolderId.Content);
             }
         }
-        
+
         /// <summary>
         /// Deleting the image on dropping the image to recylcle folder.
         /// </summary>
@@ -354,7 +376,7 @@ namespace RAPPTest
 
                 //binding UI again
                 mv.GetAllMediaData((Guid)lblMediaFolderId.Content);
-            }   
+            }
         }
 
         private void iconZoomOut_MouseUp(object sender, RoutedEventArgs e)
@@ -370,7 +392,7 @@ namespace RAPPTest
         private void iconZoomIn_MouseUp(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
-            {  
+            {
                 //chaning size of each image by looping through the list
                 ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
                 lbi.Width = 120;
@@ -392,10 +414,10 @@ namespace RAPPTest
         private void play_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             //calling the play view UI when the play tab is selected from the menu
-            
+
             PlayView playView = new PlayView();
             playView.EnterFullScreen();
-            this.tabControl.SelectedIndex = 2;
+            this.tabControl.SelectedIndex = 5;
             return;
         }
 
@@ -426,7 +448,7 @@ namespace RAPPTest
             txtImportHeader.Text = title;
 
         }
-         
+
         /// <summary>
         /// showing images against respective folder when the user clicks on the folder icon.
         /// </summary>
@@ -457,7 +479,7 @@ namespace RAPPTest
         private void middleTextBox_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             // in this event we are basically showing and hiding the note field 
-            
+
             MainWindow window = (MainWindow)Application.Current.MainWindow;
             if (window.tabControl.SelectedIndex == 3)
             {
@@ -478,7 +500,7 @@ namespace RAPPTest
         private void btnSaveOrganizer_Click(object sender, RoutedEventArgs e)
         {
             //saving description against the images and video files
-            
+
             MediaView mv = new MediaView();
             Medium m = new Medium();
             List<Medium> lstMedium = new List<Medium>();
@@ -490,13 +512,13 @@ namespace RAPPTest
             if (lblScriptMediaId.Content != null)
             {
                 Guid mediaId = (Guid)lblScriptMediaId.Content;
-               
+
                 m.Description = txtDescriptionOrganizer.Text;
                 m.Title = txtTitleOrganizer.Text;
                 m.Notes = txtNotesOrganizer.Text;
                 mv.UpdateImageData(mediaId, m);
             }
-          
+
             foreach (Media item in mic.lstImageGallery.Items)
             {
                 sequence++;
@@ -539,7 +561,7 @@ namespace RAPPTest
 
 
         #region Struct
-       
+
         internal struct LASTINPUTINFO
         {
             public uint cbSize;

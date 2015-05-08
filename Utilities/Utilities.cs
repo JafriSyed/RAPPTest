@@ -42,18 +42,21 @@ namespace RAPPTest.Utilities
             string oldFilePath = Path.GetFileNameWithoutExtension(oldFileName);
             string appDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
             string newFilePath = appDirectory + "\\Media\\";
+            string newFileThumbnailPath = appDirectory + "\\Media\\Thumbnails\\";
             newFileName = DateTime.Now.Ticks.ToString() + ext;
             File.Copy(oldFileName, newFilePath + newFileName);
             if(IsVideo(newFileName))
-                ExtractVideoFromImage(newFilePath, newFileName);
+                ExtractVideoFromImage(newFilePath, newFileName, newFileThumbnailPath);
+            else
+                GenerateThumbnail(newFileName, newFilePath, newFileThumbnailPath, false);
+
             return newFileName;
         }
 
-        private static void ExtractVideoFromImage(string filePath, string fileName)
+        private static void ExtractVideoFromImage(string filePath, string fileName, string thumbnailFilePath)
         {
             MediaDet md = new MediaDet();
             float interval = 1.0f;
-            Image img;
             md.Filename = filePath + fileName;
             md.CurrentStream = 0;
             int len = (int)md.StreamLength;
@@ -64,11 +67,9 @@ namespace RAPPTest.Utilities
                 if (i == midLen)
                 {
                     string fBitmapName = filePath + Path.GetFileNameWithoutExtension(fileName);
-                    md.WriteBitmapBits(i, 320, 240, fBitmapName + ".bmp");
-                    img = System.Drawing.Image.FromFile(fBitmapName + ".bmp");
-                    img.Save(fBitmapName + ".jpg", ImageFormat.Jpeg);
-                    img.Dispose();
-                    System.IO.File.Delete(fBitmapName + ".bmp");
+                    string bitmapFileName = fBitmapName + ".bmp";                  
+                    md.WriteBitmapBits(i, 320, 240, bitmapFileName);               
+                    GenerateThumbnail(bitmapFileName, filePath, thumbnailFilePath, true);
                 }
             }
         }
@@ -88,5 +89,67 @@ namespace RAPPTest.Utilities
             fileName = Path.GetFileNameWithoutExtension(fileName);
             return fileName + ".jpg";
         }
+
+        private static void GenerateThumbnail(string fileName, string filePath, string thumbnailPath, bool isVideo)
+        {
+            // Load image.
+            Image image;
+
+            if(isVideo)
+                image = Image.FromFile(fileName);
+            else
+                image = Image.FromFile(filePath + fileName);
+
+            // Compute thumbnail size.
+            Size thumbnailSize = GetThumbnailSize(image);
+
+            // Get thumbnail.
+            Image thumbnail = image.GetThumbnailImage(thumbnailSize.Width, thumbnailSize.Height, null, IntPtr.Zero);
+
+            // Save thumbnail.
+            if (!isVideo)
+                thumbnail.Save(thumbnailPath + fileName);
+            else
+            {
+                string jpegFileName = Path.GetFileNameWithoutExtension(fileName) + ".jpg";
+                thumbnail.Save(thumbnailPath + jpegFileName, ImageFormat.Jpeg);
+                thumbnail.Dispose();
+                //System.IO.File.Delete(fileName);
+            }
+        }
+
+        private static Size GetThumbnailSize(Image original)
+        {
+            // Width and height.
+            int originalWidth = original.Width;
+            int originalHeight = original.Height;
+            int width = 400;
+            int height = 350;
+            decimal ratio;
+            int newWidth = 0;
+            int newHeight = 0;
+               
+            if (originalWidth < width && originalHeight < height)
+                return new Size(originalWidth, originalHeight);
+
+            if (originalWidth > originalHeight)
+            {
+                ratio = (decimal)width /originalWidth;
+                newWidth = width;
+                decimal temp = originalHeight * ratio;
+                newHeight = (int)temp;
+            }
+            else
+            {
+                ratio = (decimal)height / originalHeight;
+                newHeight = height;
+                decimal temp = originalWidth * ratio;
+                newWidth = (int)temp;
+            }
+
+            return new Size((int)(newWidth), (int)(newHeight));
+        }
+
+   
     }
 }

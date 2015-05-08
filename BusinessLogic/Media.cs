@@ -367,10 +367,12 @@ namespace RAPPTest
             {
                 //creating video
                 MediaElement video = new MediaElement();
-
+                video.Name = "videoPlayer";
                 video.BeginInit();
                 video.Source = uri;
-
+                video.LoadedBehavior = MediaState.Manual;
+                video.UnloadedBehavior = MediaState.Manual;
+                video.Play();
                 return video;
             }
             catch (Exception ex)

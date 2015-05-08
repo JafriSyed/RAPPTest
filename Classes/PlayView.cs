@@ -22,17 +22,17 @@ namespace RAPPTest
         private WPFWindow _fullScreenWindow;
         private showcaseList _showcase = null;
 
-        public PlayView(TabItem playTabItem, Viewbox playViewbox)
-        {
-            //intializing all the components withing playbox tab
+        //public PlayView(TabItem playTabItem, Viewbox playViewbox)
+        //{
+        //    //intializing all the components withing playbox tab
 
-            this._playTabItem = playTabItem;
-            this._playViewbox = playViewbox;
-            this._fullScreenWindow = new WPFWindow(this);
-            base.ChangeRequestEvents = new ChangeRequestEvents(this);
+        //    this._playTabItem = playTabItem;
+        //    this._playViewbox = playViewbox;
+        //    this._fullScreenWindow = new WPFWindow(this);
+        //    base.ChangeRequestEvents = new ChangeRequestEvents(this);
 
-            InitializeActions();
-        }
+        //    InitializeActions();
+        //}
 
         public PlayView()
         {
@@ -60,21 +60,51 @@ namespace RAPPTest
                 this.getWPFWindow.setIsOpen = false;
             }
 
+            if (e.Key == System.Windows.Input.Key.Up)
+            {
+                System.Windows.Controls.Grid myGrid = (Grid)this.getWPFWindow.dynamicViewbox.Tag;
+                if (myGrid.Children.Count > 0)
+                {
+                    if (myGrid.Children[0] is MediaElement)
+                    {
+                        MediaElement me = (MediaElement)myGrid.Children[0];
+                        me.UnloadedBehavior = MediaState.Manual;
+                        me.LoadedBehavior = MediaState.Manual;
+                        me.Pause();
+                    }
+                }
+            }
+
+            if (e.Key == System.Windows.Input.Key.Down)
+            {
+                System.Windows.Controls.Grid myGrid = (Grid)this.getWPFWindow.dynamicViewbox.Tag;
+                if (myGrid.Children.Count > 0)
+                {
+                    if (myGrid.Children[0] is MediaElement)
+                    {
+                        MediaElement me = (MediaElement)myGrid.Children[0];
+                        me.UnloadedBehavior = MediaState.Manual;
+                        me.LoadedBehavior = MediaState.Manual;
+                        me.Play();
+                    }
+                }
+            }
+
             if (e.Key == System.Windows.Input.Key.Space)
             {
                 //show description
                 this.getWPFWindow.SetViewboxContent(this.getMedia);
-                this.getWPFWindow.PauseVideo(this.getMedia);
-
             }
 
-            else if (e.Key == System.Windows.Input.Key.Left)
+           
+
+            if (e.Key == System.Windows.Input.Key.Left)
             {
                 // goto previous media file
                 this.PerformPrevButtonClick();
             }
 
-            else if (e.Key == System.Windows.Input.Key.Right)
+            if (e.Key == System.Windows.Input.Key.Right)
             {
                 //goto next media file
                 this.PerformNextButtonClick();
@@ -268,8 +298,11 @@ namespace RAPPTest
                         };
 
             this.MediaModelList = new List<Media>(query);
-            this.MediaModel = MediaModelList[0];
-            _fullScreenWindow.EnterFullScreen(MediaModel);
+            if (MediaModelList.Count > 0)
+            {
+                this.MediaModel = MediaModelList[0];
+                _fullScreenWindow.EnterFullScreen(MediaModel);
+            }
         }
 
         public void EnterFullScreen(Media e)
@@ -292,7 +325,7 @@ namespace RAPPTest
         {
             private bool isOpen;
             private PlayView parent;
-            private Viewbox dynamicViewbox;
+            public Viewbox dynamicViewbox;
 
             private string folderName;
             private string keyName;
@@ -360,7 +393,7 @@ namespace RAPPTest
             public void SetViewboxContent(Media media, int a)
             {
                 //styling the controls
-
+                
                 System.Windows.Controls.Grid myGrid = new Grid();
                 System.Windows.Controls.TextBlock titleTextBlock = new TextBlock();
                 titleTextBlock.TextAlignment = TextAlignment.Center;
@@ -407,16 +440,8 @@ namespace RAPPTest
                     myGrid.Children.Add(indexCanvas);
                 }
 
+                this.dynamicViewbox.Tag = myGrid;
                 dynamicViewbox.Child = myGrid;
-            }
-
-            public void PauseVideo(Media media)
-            {
-                if (media.IsVideo())
-                {
-                    //
-                }
-
             }
 
             public void SetViewboxContent(Media media)
@@ -499,6 +524,7 @@ namespace RAPPTest
                     myGrid.Children.Add(titleDescCanvas);
                 }
                 dynamicViewbox.Child = myGrid;
+                this.dynamicViewbox.Tag = myGrid;
             }
 
 
