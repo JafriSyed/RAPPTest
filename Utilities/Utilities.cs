@@ -92,29 +92,37 @@ namespace RAPPTest.Utilities
 
         private static void GenerateThumbnail(string fileName, string filePath, string thumbnailPath, bool isVideo)
         {
-            // Load image.
-            Image image;
-
-            if(isVideo)
-                image = Image.FromFile(fileName);
-            else
-                image = Image.FromFile(filePath + fileName);
-
-            // Compute thumbnail size.
-            Size thumbnailSize = GetThumbnailSize(image);
-
-            // Get thumbnail.
-            Image thumbnail = image.GetThumbnailImage(thumbnailSize.Width, thumbnailSize.Height, null, IntPtr.Zero);
-
-            // Save thumbnail.
-            if (!isVideo)
-                thumbnail.Save(thumbnailPath + fileName);
-            else
+            try
             {
-                string jpegFileName = Path.GetFileNameWithoutExtension(fileName) + ".jpg";
-                thumbnail.Save(thumbnailPath + jpegFileName, ImageFormat.Jpeg);
-                thumbnail.Dispose();
-                //System.IO.File.Delete(fileName);
+
+                // Load image.
+                Image image;
+
+                if (isVideo)
+                    image = Image.FromFile(fileName);
+                else
+                    image = Image.FromFile(filePath + fileName);
+
+                // Compute thumbnail size.
+                Size thumbnailSize = GetThumbnailSize(image);
+
+                // Get thumbnail.
+                Image thumbnail = image.GetThumbnailImage(thumbnailSize.Width, thumbnailSize.Height, null, IntPtr.Zero);
+
+                // Save thumbnail.
+                if (!isVideo)
+                    thumbnail.Save(thumbnailPath + fileName);
+                else
+                {
+                    string jpegFileName = Path.GetFileNameWithoutExtension(fileName) + ".jpg";
+                    thumbnail.Save(thumbnailPath + jpegFileName, ImageFormat.Jpeg);
+                    thumbnail.Dispose();
+                    //System.IO.File.Delete(fileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 

@@ -161,7 +161,7 @@
                     <WebBrowser x:Name="homeBrowser" Margin="0,0,0,0" Cursor="Arrow"  Source="http://google.com"/>
                 </Grid>
             </TabItem>
-            <TabItem Selector.IsSelected="True"  Header="Import"  FontSize="14" FontWeight="Bold"  Style="{StaticResource tabItemStyle}" Name="import">
+            <TabItem Header="Import"  FontSize="14" FontWeight="Bold"  Style="{StaticResource tabItemStyle}" Name="import">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="445*"/>
@@ -273,7 +273,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem  Header="Organizer" Name="organizer" FontWeight="Bold" FontSize="14"  Style="{StaticResource tabItemStyle}">
+            <TabItem Selector.IsSelected="True"    Header="Organizer" Name="organizer" FontWeight="Bold" FontSize="14"  Style="{StaticResource tabItemStyle}">
                 <Grid HorizontalAlignment="Stretch">
 
                     <Grid.Background>
@@ -321,7 +321,7 @@
                                 </TextBox>
                             </ScrollViewer>
                             <!--<Button Grid.Row="2" HorizontalAlignment="Center" Content="Click Me" FontSize="11" FontWeight="Normal" Width="70" Name="BtnClickMe" Click="BtnClickMe_Click"></Button>-->
-                            <TextBox Grid.Row="2" Name="txtMoreDataOrganizer" HorizontalAlignment="Center" Text="More data" FontWeight="Normal" FontSize="12" VerticalAlignment="Center"  Width="100" PreviewMouseLeftButtonUp="middleTextBox_PreviewMouseLeftButtonUp" HorizontalContentAlignment="Center"/>
+                            <Button Grid.Row="2" Name="btnMoreDataOrganizer" HorizontalAlignment="Center" Content="More data" FontWeight="Normal" FontSize="12" VerticalAlignment="Center"  Width="100" PreviewMouseLeftButtonUp="btnMoreData_PreviewMouseLeftButtonUp" HorizontalContentAlignment="Center"/>
                             <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Visible" Visibility="Hidden" Name="lowerScrollViewOrganizer">
                                 <TextBox Name="txtNotesOrganizer" Margin="10,10,10,10" FontSize="11" FontWeight="Normal" AcceptsReturn="True" TextWrapping="Wrap">
                                 </TextBox>
@@ -423,7 +423,7 @@
                                 <TextBox Name="txtDescription" Margin="5,5,5,5" TextWrapping="Wrap" AcceptsReturn="True" FontSize="11" FontWeight="Normal">
                                 </TextBox>
                             </ScrollViewer>
-                            <TextBox Grid.Row="2" Name="txtMoreData" HorizontalAlignment="Center" Text="More data" FontWeight="Normal" FontSize="12" VerticalAlignment="Center" PreviewMouseLeftButtonUp="middleTextBox_PreviewMouseLeftButtonUp" Width="100" HorizontalContentAlignment="Center"/>
+                            <Button Grid.Row="2" Name="btnMoreData" HorizontalAlignment="Center" Content="More data" FontWeight="Normal" FontSize="12" VerticalAlignment="Center" PreviewMouseLeftButtonUp="btnMoreData_PreviewMouseLeftButtonUp" Width="100" HorizontalContentAlignment="Center"/>
                             <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Visible" Visibility="Hidden" Name="lowerScrollView">
                                 <TextBox Name="txtNotes" Margin="10,10,10,10" FontSize="11" FontWeight="Normal" AcceptsReturn="True" TextWrapping="Wrap">
                                 </TextBox>
@@ -437,40 +437,42 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ItemsControl Name="mediaListBox" SnapsToDevicePixels="True" Margin="0,34,0,0">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel IsItemsHost="True" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollContentPresenter}}}" >
-                                </WrapPanel>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <Image Grid.Row="0"
+                    <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Name="imgBucketScrollView">
+                        <ItemsControl Name="mediaListBox" SnapsToDevicePixels="True" Margin="0,34,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollContentPresenter}}}" >
+                                    </WrapPanel>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Image Grid.Row="0"
 							             Width="100"
                                           Height="80"
 							             Margin="5,5,5,0">
-                                        <Image.Source>
-                                            <BitmapImage UriSource="{Binding FileName}"  />
-                                        </Image.Source>
-                                    </Image>
-                                    <Label Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Label.Content>
-                                            <TextBlock>
+                                            <Image.Source>
+                                                <BitmapImage UriSource="{Binding FileName}"  />
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Label.Content>
+                                                <TextBlock>
                                                 <TextBlock.Text>
                                                     <MultiBinding StringFormat="{}{0}{1}">
                                                         <Binding Path="FolderNum" />
                                                         <Binding Path="FolderName" />
                                                      </MultiBinding>
                                                 </TextBlock.Text>
-                                            </TextBlock>
-                                        </Label.Content>
-                                    </Label>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                                </TextBlock>
+                                            </Label.Content>
+                                        </Label>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
             </TabItem>
             <TabItem Header="Play" FontSize="14" FontWeight="Bold" Style="{StaticResource tabItemStyle}" Name="play" PreviewMouseLeftButtonUp="play_PreviewMouseLeftButtonUp">

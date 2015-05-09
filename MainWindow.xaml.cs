@@ -65,6 +65,7 @@ namespace RAPPTest
             CreateUpperGridButtons();
             CreateLowerGridButtons();
             expBrowser.NavigationTarget = ShellFileSystemFolder.FromFolderPath("C:\\");
+            
         }
 
         #endregion
@@ -139,38 +140,38 @@ namespace RAPPTest
             char startLabel = 'A';
             for (int i = 0; i < 13; i++)
             {
-                ColumnDefinition colDefn = new ColumnDefinition();
-                ColumnDefinition colDefn2 = new ColumnDefinition();
-                gridButtonUpper.ColumnDefinitions.Add(colDefn);
-                gridButtonUpperImport.ColumnDefinitions.Add(colDefn2);
+                ColumnDefinition colGrdUpper = new ColumnDefinition();
+                ColumnDefinition colGrdLower = new ColumnDefinition();
+                gridButtonUpper.ColumnDefinitions.Add(colGrdUpper);
+                gridButtonUpperImport.ColumnDefinitions.Add(colGrdLower);
             }
             for (int i = 0; i < 13; i++)
             {
-                Button btn = new Button();
-                Button btn2 = new Button();
+                Button btnGrdUpper = new Button();
+                Button btnGrdLower = new Button();
                 if (i == 0)
-                    _selectedButton = btn;
-                btn.Name = startLabel.ToString();
-                btn.Content = "" + startLabel;
-                btn.FontSize = 24;
-                btn.FontFamily = new FontFamily("Arial");
-                btn.Click += new RoutedEventHandler(btn_Click);
-                btn.AllowDrop = true;
-                btn.SetValue(Grid.ColumnProperty, i);
+                    _selectedButton = btnGrdUpper;
+                btnGrdUpper.Name = startLabel.ToString();
+                btnGrdUpper.Content = "" + startLabel;
+                btnGrdUpper.FontSize = 24;
+                btnGrdUpper.FontFamily = new FontFamily("Arial");
+                btnGrdUpper.Click += new RoutedEventHandler(btn_Click);
+                btnGrdUpper.AllowDrop = true;
+                btnGrdUpper.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
-                    btn.Margin = new Thickness(2, 0, 0, 0);
+                    btnGrdUpper.Margin = new Thickness(2, 0, 0, 0);
 
-                btn2.Name = startLabel.ToString();
-                btn2.Content = "" + startLabel;
-                btn2.FontSize = 24;
-                btn2.FontFamily = new FontFamily("Arial");
-                btn2.Click += new RoutedEventHandler(btn_Click);
-                btn2.AllowDrop = true;
-                btn2.SetValue(Grid.ColumnProperty, i);
+                btnGrdLower.Name = startLabel.ToString();
+                btnGrdLower.Content = "" + startLabel;
+                btnGrdLower.FontSize = 24;
+                btnGrdLower.FontFamily = new FontFamily("Arial");
+                btnGrdLower.Click += new RoutedEventHandler(btn_Click);
+                btnGrdLower.AllowDrop = true;
+                btnGrdLower.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
-                    btn2.Margin = new Thickness(2, 0, 0, 0);
-                gridButtonUpper.Children.Add(btn);
-                gridButtonUpperImport.Children.Add(btn2);
+                    btnGrdLower.Margin = new Thickness(2, 0, 0, 0);
+                gridButtonUpper.Children.Add(btnGrdUpper);
+                gridButtonUpperImport.Children.Add(btnGrdLower);
                 startLabel++;
             }
         }
@@ -183,37 +184,37 @@ namespace RAPPTest
             char startLabel = 'N';
             for (int i = 0; i < 13; i++)
             {
-                ColumnDefinition colDefn = new ColumnDefinition();
-                gridButtonLower.ColumnDefinitions.Add(colDefn);
-                ColumnDefinition colDefn2 = new ColumnDefinition();
-                gridButtonLowerImport.ColumnDefinitions.Add(colDefn2);
+                ColumnDefinition colGrdUpper = new ColumnDefinition();
+                ColumnDefinition colGrdLower = new ColumnDefinition();
+                gridButtonLower.ColumnDefinitions.Add(colGrdUpper);
+                gridButtonLowerImport.ColumnDefinitions.Add(colGrdLower);
             }
             for (int i = 0; i < 13; i++)
             {
-                Button btn = new Button();
-                Button btn2 = new Button();
-                btn.Content = startLabel;
-                btn.FontSize = 24;
-                btn.FontFamily = new FontFamily("Arial");
-                btn.Click += new RoutedEventHandler(btn_Click);
-                btn.AllowDrop = true;
-                btn.SetValue(Grid.ColumnProperty, i);
+                Button btnGrdUpper = new Button();
+                Button btnGrdLower = new Button();
+                btnGrdUpper.Content = startLabel;
+                btnGrdUpper.FontSize = 24;
+                btnGrdUpper.FontFamily = new FontFamily("Arial");
+                btnGrdUpper.Click += new RoutedEventHandler(btn_Click);
+                btnGrdUpper.AllowDrop = true;
+                btnGrdUpper.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
                 {
-                    btn.Margin = new Thickness(2, 0, 0, 0);
+                    btnGrdUpper.Margin = new Thickness(2, 0, 0, 0);
                 }
-                btn2.Content = startLabel;
-                btn2.FontSize = 24;
-                btn2.FontFamily = new FontFamily("Arial");
-                btn2.Click += new RoutedEventHandler(btn_Click);
-                btn2.AllowDrop = true;
-                btn2.SetValue(Grid.ColumnProperty, i);
+                btnGrdLower.Content = startLabel;
+                btnGrdLower.FontSize = 24;
+                btnGrdLower.FontFamily = new FontFamily("Arial");
+                btnGrdLower.Click += new RoutedEventHandler(btn_Click);
+                btnGrdLower.AllowDrop = true;
+                btnGrdLower.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
                 {
-                    btn2.Margin = new Thickness(2, 0, 0, 0);
+                    btnGrdLower.Margin = new Thickness(2, 0, 0, 0);
                 }
-                gridButtonLower.Children.Add(btn);
-                gridButtonLowerImport.Children.Add(btn2);
+                gridButtonLower.Children.Add(btnGrdUpper);
+                gridButtonLowerImport.Children.Add(btnGrdLower);
                 startLabel++;
             }
         }
@@ -301,23 +302,6 @@ namespace RAPPTest
                 }
             }
             dynamicViewbox.Child = myGrid;
-            //MessageBox.Show("Screen Saver...");
-            //string appDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
-            //string newFilePathForImages = appDirectory + "\\Media\\Thumbnails\\635666748266078880.jpg";
-            //BitmapImage img = new BitmapImage();
-            //img.UriSource = new Uri(newFilePathForImages);
-            //MainWindow mw = (MainWindow)Application.Current.MainWindow;
-            //var myPopup = new Popup
-            //{
-            //    Child = new Image
-            //    {
-            //        Source = img,
-            //        Stretch = Stretch.UniformToFill,
-            //        Height = 500,
-            //        Width = 500
-            //    }
-            //};
-            //myPopup.IsOpen = true; 
         }
 
         private void ImagebucketTab_MouseUp(object sender, MouseButtonEventArgs e)
@@ -328,6 +312,7 @@ namespace RAPPTest
                 MediaView mv = new MediaView();
                 ObservableCollection<Media> mediaObj = mv.GetAllImages();
                 mediaListBox.ItemsSource = mediaObj;
+                mediaListBox.Tag = mv.GetImageBucketItemCount(mediaObj);
             }
             catch (Exception ex)
             {
@@ -355,6 +340,7 @@ namespace RAPPTest
                 GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
                 MediaImportControl ic = new MediaImportControl();
                 ic.BindImages((Guid)lblMediaFolderId.Content);
+
             }
         }
 
@@ -395,8 +381,7 @@ namespace RAPPTest
             {
                 //chaning size of each image by looping through the list
                 ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
-                lbi.Width = 120;
-                lbi.Height = 120;
+                lbi.Width = 120; 
             }
         }
 
@@ -469,14 +454,18 @@ namespace RAPPTest
                     _openFolder = clickedFolder;
                 }
 
+
                 //binding list again as now the folder has changed
                 GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
                 MediaImportControl ic = new MediaImportControl();
                 ic.BindImages((Guid)lblMediaFolderId.Content);
+
+                imgBucketScrollView.ScrollToVerticalOffset(50);
+
             }
         }
 
-        private void middleTextBox_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void btnMoreData_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             // in this event we are basically showing and hiding the note field 
 

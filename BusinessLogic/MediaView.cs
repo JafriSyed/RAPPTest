@@ -190,7 +190,6 @@ namespace RAPPTest
             }
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -332,6 +331,28 @@ namespace RAPPTest
             return query;
         }
 
+
+        public ObservableCollection<ImageBucket> GetImageBucketItemCount(ObservableCollection<Media> lstMedia)
+        {
+            ObservableCollection<ImageBucket> lstBucket = new ObservableCollection<ImageBucket>();
+
+            var query =  from l in lstMedia
+                         group l by l.FolderNum into cl
+                         orderby cl.First().FolderNum
+                         select new ImageBucket
+                         {
+                                FolderItemCount = cl.Count(),
+                                TotalItems = lstMedia.Count(),
+                                FolderNum = cl.First().FolderNum,
+                                Percentage = Math.Round((double)(((double)cl.Count() / (double)lstMedia.Count()) * 100), 2)
+                         };
+
+            
+            if (query.Count() > 0)
+                lstBucket = new ObservableCollection<ImageBucket>(query);
+
+            return lstBucket;
+        }
         /// <summary>
         /// 
         /// </summary>

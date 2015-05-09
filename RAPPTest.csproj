@@ -90,6 +90,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BusinessLogic\ImageBucket.cs" />
     <Compile Include="BusinessLogic\Media.cs" />
     <Compile Include="BusinessLogic\Folder.cs" />
     <Compile Include="BusinessLogic\MediaView.cs" />

@@ -36,14 +36,11 @@ namespace RAPPTest
     {
         private ObservableCollection<Media> _mediaObj = new ObservableCollection<Media>();
         private Media _selectedModel;
-        private bool mSingleClick;
         private ListBox _associatedObject;
-        private System.Windows.Threading.DispatcherTimer clickTimer = new System.Windows.Threading.DispatcherTimer();
-    
+
         public MediaImportControl()
         {
             InitializeComponent();
-            clickTimer.Tick += clickTimer_Tick;
         }
 
         /// <summary>
@@ -155,20 +152,15 @@ namespace RAPPTest
         /// <param name="e"></param>
         private void lstImageGallery_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            MainWindow window = (MainWindow)Application.Current.MainWindow;
             ListBox item = (ListBox)sender;
             Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
-            GetMediaByMediaId(mediaId, 3);
-            mSingleClick = false;
+            GetMediaByMediaId(mediaId);
+            window.tabControl.SelectedIndex = 3;
+            e.Handled = true;
         }
-        private void clickTimer_Tick(object sender, EventArgs e)
-        {
-            if (mSingleClick)
-            {
-                clickTimer.Stop();
-                mSingleClick = false;
-                MessageBox.Show("Single click");
-            }
-        }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -176,24 +168,19 @@ namespace RAPPTest
         /// <param name="e"></param>
         private void lstImageGallery_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
-            if (e.ClickCount < 2)
+            MainWindow window = (MainWindow)Application.Current.MainWindow;
+            ListBox item = (ListBox)sender;
+            if (item.SelectedItems.Count > 0)
             {
-                //mSingleClick = true; 
-                clickTimer.Interval = new TimeSpan(0, 0, 0, 0, 1800);
-                clickTimer.Start();
-                ListBox item = (ListBox)sender;
-                if (item.SelectedItems.Count > 0)
-                {
-                    Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
-                    GetMediaByMediaId(mediaId, 2);
-                }
+                Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
+                GetMediaByMediaId(mediaId);
             }
-            else if (e.ClickCount == 2)
+            if (window.tabControl.SelectedIndex == 2)
             {
-                clickTimer.Stop();
-                mSingleClick = false; 
+                window.tabControl.SelectedIndex = 3;
+                window.tabControl.SelectedIndex = 2;
             }
+            e.Handled = true;
         }
 
         /// <summary>
@@ -201,20 +188,8 @@ namespace RAPPTest
         /// </summary>
         /// <param name="mediaId"></param>
         /// <param name="selectedIndex"></param>
-        private void GetMediaByMediaId(Guid mediaId, int selectedIndex)
+        private void GetMediaByMediaId(Guid mediaId)
         {
-            MainWindow window = (MainWindow)Application.Current.MainWindow;
-
-            if (selectedIndex == 2)
-            {
-                window.tabControl.SelectedIndex = selectedIndex;
-            }
-            else if (selectedIndex == 3)
-            {
-                //window.imgScript.Source = new BitmapImage(new Uri(System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "\\Images\\" + m.FileName));
-                window.tabControl.SelectedIndex = 3;
-            }
-
             ShowData(mediaId);
         }
 
@@ -278,6 +253,30 @@ namespace RAPPTest
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
+            }
+        }
+
+        private int m_ListBoxWidth = 350;
+
+        public int ListBoxWidth
+        {
+            get { return m_ListBoxWidth; }
+            set
+            {
+                m_ListBoxWidth = value;
+                NotifyPropertyChanged("ListBoxWidth");
+            }
+        }
+
+        private int m_ListBoxHeight = 150;
+
+        public int ListBoxHeight
+        {
+            get { return m_ListBoxHeight; }
+            set
+            {
+                m_ListBoxHeight = value;
+                NotifyPropertyChanged("ListBoxHeight");
             }
         }
     }
