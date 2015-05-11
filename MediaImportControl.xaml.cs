@@ -73,6 +73,7 @@ namespace RAPPTest
         private void OnDrop(object sender, System.Windows.DragEventArgs e)
         {
             //adding images to database after dropping them to the grid.
+            StringBuilder sb = new StringBuilder();
             MainWindow window = (MainWindow)Application.Current.MainWindow;
             RappTestEntities mediaEntity = new RappTestEntities();
             List<Media> lstMedia = new List<Media>();
@@ -87,28 +88,51 @@ namespace RAPPTest
                 lastSequence = Convert.ToInt32(query.Max());
 
             //checking if any file has been dropped on the grid
+            int counter = 0;
 
             if (e.Data is DataObject && ((DataObject)e.Data).ContainsFileDropList())
             {
                 foreach (string filePath in ((DataObject)e.Data).GetFileDropList())
                 {
-
-                    if (Utilities.Utilities.IsImage(filePath) || Utilities.Utilities.IsVideo(filePath))
+                    try
                     {
-                        lastSequence++;
-                        var fileName = filePath.ToString();
-                        Media m = new Media();
-                        m.Sequence = lastSequence;
-                        m.FileName = Utilities.Utilities.RenameAndMoveFile(filePath.ToString());
-                        m.IsDeleted = false;
-                        m.IsScreenSaver = false;
-                        m.MediaFolderId = mediaFolderId;
-                        lstMedia.Add(m);
+                        if (Utilities.Utilities.IsImage(filePath) || Utilities.Utilities.IsVideo(filePath))
+                        {
+                            lastSequence++;
+                            var fileName = filePath.ToString();
+                            Media m = new Media();
+                            m.Sequence = lastSequence;
+                            m.FileName = Utilities.Utilities.RenameAndMoveFile(filePath.ToString());
+                            m.IsDeleted = false;
+                            m.IsScreenSaver = false;
+                            m.MediaFolderId = mediaFolderId;
+                            lstMedia.Add(m);
+                        }
+                        else
+                        {
+                            if (counter == 0)
+                            {
+                                sb.Append("Following files have incorrect format: ");
+                                sb.Append(Environment.NewLine);
+                                sb.Append(Environment.NewLine);
+                            }
+                            sb.Append(System.IO.Path.GetFileName(filePath));
+                            sb.Append(Environment.NewLine);
+                            counter++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        sb.Append(System.IO.Path.GetFileName(filePath));
+                        sb.Append(Environment.NewLine);
                     }
                 }
                 //inserting images and binding the grid again
                 MediaView.InsertImages(lstMedia);
                 BindImages(mediaFolderId);
+
+                if(sb.Length > 0)
+                    MessageBox.Show(sb.ToString());
             }
         }
 

@@ -231,23 +231,43 @@ namespace RAPPTest
             foreach (var f in folder)
             {
                 lblMediaFolderId.Content = f.MediaFolderId;
-                if (this.tabControl.SelectedIndex == 1)
+
+                if (!string.IsNullOrEmpty(f.Title))
                 {
-                    if (!string.IsNullOrEmpty(f.Title))
-                        txtImportHeader.Text = f.Title;
-                    else
-                        txtImportHeader.Text = "Import images and videos";
+                    txtImportHeader.Text = f.Title;
+                    txtOrganizerHeader.Text = f.Title;
+                    txtScriptHeader.Text = f.Title;
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(f.Title))
-                        txtOrganizerHeader.Text = f.Title;
-                    else
-                        txtOrganizerHeader.Text = "Organize your media collection";
-                }
+                    txtImportHeader.Text = "Import images and videos";
+                    txtOrganizerHeader.Text = "Organize your media collection";
+                    txtScriptHeader.Text = "View and edit media data";
+                } 
             }
         }
 
+        private void ShowScreenSaver()
+        {
+            PlayView playView = new PlayView();
+            RappTestEntities rappRntity = new RappTestEntities();
+            IEnumerable<Media> media = from m in rappRntity.Media
+                                       where m.IsScreenSaver == true
+                                       select new Media { FileName = m.FileName };
+            Viewbox dynamicViewbox = new Viewbox();
+            System.Windows.Controls.Grid myGrid = new Grid();
+
+            if (media.Count() > 0)
+            {
+                foreach (Media m in media)
+                {
+                    MainWindow window = (MainWindow)Application.Current.MainWindow;
+                    this.Show();
+                    myGrid.Children.Add(m.GetUIElement());
+                }
+            }
+            dynamicViewbox.Child = myGrid;
+        }
 
 
         #endregion
@@ -282,26 +302,9 @@ namespace RAPPTest
             }
         }
 
-        private void ShowScreenSaver()
+        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            PlayView playView = new PlayView();
-            RappTestEntities rappRntity = new RappTestEntities();
-            IEnumerable<Media> media = from m in rappRntity.Media
-                                       where m.IsScreenSaver == true
-                                       select new Media { FileName = m.FileName };
-            Viewbox dynamicViewbox = new Viewbox();
-            System.Windows.Controls.Grid myGrid = new Grid();
 
-            if (media.Count() > 0)
-            {
-                foreach (Media m in media)
-                {
-                    MainWindow window = (MainWindow)Application.Current.MainWindow;
-                    this.Show();
-                    myGrid.Children.Add(m.GetUIElement());
-                }
-            }
-            dynamicViewbox.Child = myGrid;
         }
 
         private void ImagebucketTab_MouseUp(object sender, MouseButtonEventArgs e)
@@ -328,13 +331,17 @@ namespace RAPPTest
                 //setting active folder on the bottom of the UI
                 activeBtn.Content = btn.Content;
                 activeBtnImport.Content = btn.Content;
+                activeBtnScript.Content = btn.Content;
 
-                //styling buttons
-                btn.Background = Brushes.Purple;
-                btn.Foreground = Brushes.Yellow;
-                _selectedButton.ClearValue(Button.BackgroundProperty);
-                _selectedButton.ClearValue(Button.ForegroundProperty);
-                _selectedButton = btn;
+                if (activeBtn.Content != _selectedButton.Content)
+                {
+                    //styling buttons
+                    btn.Background = Brushes.Purple;
+                    btn.Foreground = Brushes.Yellow;
+                    _selectedButton.ClearValue(Button.BackgroundProperty);
+                    _selectedButton.ClearValue(Button.ForegroundProperty);
+                    _selectedButton = btn;
+                }
 
                 //binding images after fetching them from the database by providing media folder id
                 GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
@@ -408,6 +415,12 @@ namespace RAPPTest
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
+            UpdateTitleandSequence();
+        }
+
+
+        private void UpdateTitleandSequence()
+        {
             //updating sequence of the images
             List<Medium> lstMedium = new List<Medium>();
             MediaView mv = new MediaView();
@@ -431,7 +444,6 @@ namespace RAPPTest
 
             string title = mv.UpdateMediaFolderTitle(mediaFolderId, txtImportHeader.Text);
             txtImportHeader.Text = title;
-
         }
 
         /// <summary>
@@ -558,7 +570,5 @@ namespace RAPPTest
         }
 
         #endregion
-
-
     }
 }

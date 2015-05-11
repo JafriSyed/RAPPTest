@@ -145,7 +145,7 @@
                 </Grid>
             </Grid>
         </Grid>
-        <TabControl Grid.Column="1" Background="Transparent" TabStripPlacement="Top" Name="tabControl" Margin="0,5,0,12">
+        <TabControl Grid.Column="1" Background="Transparent" TabStripPlacement="Top" Name="tabControl" Margin="0,5,0,12" SelectionChanged="tabControl_SelectionChanged">
 
             <TabControl.Resources>
                 <Style TargetType="TabPanel">
@@ -273,7 +273,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Selector.IsSelected="True"    Header="Organizer" Name="organizer" FontWeight="Bold" FontSize="14"  Style="{StaticResource tabItemStyle}">
+            <TabItem Selector.IsSelected="True"    Header="Organize" Name="organize" FontWeight="Bold" FontSize="14"  Style="{StaticResource tabItemStyle}">
                 <Grid HorizontalAlignment="Stretch">
 
                     <Grid.Background>
@@ -314,16 +314,16 @@
                                 <RowDefinition Height="25"/>
                                 <RowDefinition Height="4*"/>
                             </Grid.RowDefinitions>
-                            <TextBox Grid.Row="0" Name="txtTitleOrganizer" Margin="5,0,0,0" Text="Winning Smiles" HorizontalAlignment="Stretch" FontWeight="Normal" VerticalAlignment="Center" FontSize="24">
+                            <TextBox Grid.Row="0" Name="txtTitleOrganizer" TabIndex="1" Margin="5,0,0,0" Text="Winning Smiles" HorizontalAlignment="Stretch" FontWeight="Normal" VerticalAlignment="Center" FontSize="24">
                             </TextBox>
                             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" >
-                                <TextBox Name="txtDescriptionOrganizer" Margin="5,5,5,5" TextWrapping="Wrap" AcceptsReturn="True" FontSize="11" FontWeight="Normal">
+                                <TextBox Name="txtDescriptionOrganizer" TabIndex="2" Margin="5,5,5,5" TextWrapping="Wrap" AcceptsReturn="True" FontSize="11" FontWeight="Normal">
                                 </TextBox>
                             </ScrollViewer>
                             <!--<Button Grid.Row="2" HorizontalAlignment="Center" Content="Click Me" FontSize="11" FontWeight="Normal" Width="70" Name="BtnClickMe" Click="BtnClickMe_Click"></Button>-->
-                            <Button Grid.Row="2" Name="btnMoreDataOrganizer" HorizontalAlignment="Center" Content="More data" FontWeight="Normal" FontSize="12" VerticalAlignment="Center"  Width="100" PreviewMouseLeftButtonUp="btnMoreData_PreviewMouseLeftButtonUp" HorizontalContentAlignment="Center"/>
+                            <Button Grid.Row="2" Name="btnMoreDataOrganizer" TabIndex="3" HorizontalAlignment="Center" Content="More data" FontWeight="Normal" FontSize="12" VerticalAlignment="Center"  Width="100" PreviewMouseLeftButtonUp="btnMoreData_PreviewMouseLeftButtonUp" HorizontalContentAlignment="Center"/>
                             <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Visible" Visibility="Hidden" Name="lowerScrollViewOrganizer">
-                                <TextBox Name="txtNotesOrganizer" Margin="10,10,10,10" FontSize="11" FontWeight="Normal" AcceptsReturn="True" TextWrapping="Wrap">
+                                <TextBox Name="txtNotesOrganizer" Margin="10,10,10,10" TabIndex="4" FontSize="11" FontWeight="Normal" AcceptsReturn="True" TextWrapping="Wrap">
                                 </TextBox>
                             </ScrollViewer>
                         </Grid>
@@ -395,7 +395,7 @@
                         <Label FontSize="20"  Margin="3,0,0,-0.4" Height="50" Width="50" Name="activeBtnScript" Content="A" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="#FFF5F500" Grid.ColumnSpan="2" Background="#FFA600A6">
                         </Label>
                         <Border HorizontalAlignment="Left"  Margin="29.6,2,0,1.6" Grid.Column="1" BorderThickness="1" Name="textBorderScript" Grid.ColumnSpan="2">
-                            <TextBox Name="cellNameScriptTextBox" IsReadOnly="false"  Text="View and edit media data" Foreground="#FFCCF600"  FontSize="18" FontFamily="Arial" VerticalContentAlignment="Center" Background="Transparent" Margin="2 2 2 2"  BorderThickness="0" BorderBrush="#FFCECECE" Width="685"></TextBox>
+                            <TextBox Name="txtScriptHeader" IsReadOnly="false"  Text="View and edit media data" Foreground="#FFCCF600"  FontSize="18" FontFamily="Arial" VerticalContentAlignment="Center" Background="Transparent" Margin="2 2 2 2"  BorderThickness="0" BorderBrush="#FFCECECE" Width="685"></TextBox>
                             <Border.BorderBrush>
                                 <SolidColorBrush />
                             </Border.BorderBrush>
@@ -417,15 +417,15 @@
                                 <RowDefinition Height="25"/>
                                 <RowDefinition Height="4*"/>
                             </Grid.RowDefinitions>
-                            <TextBox Grid.Row="0" Name="txtTitle" Margin="5,0,0,0" Text="Winning Smiles" HorizontalAlignment="Stretch" FontWeight="Normal" VerticalAlignment="Center" FontSize="24">
+                            <TextBox Grid.Row="0" Name="txtTitle" TabIndex="1"  Margin="5,0,0,0" Text="Winning Smiles" HorizontalAlignment="Stretch" FontWeight="Normal" VerticalAlignment="Center" FontSize="24">
                             </TextBox>
                             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" >
-                                <TextBox Name="txtDescription" Margin="5,5,5,5" TextWrapping="Wrap" AcceptsReturn="True" FontSize="11" FontWeight="Normal">
+                                <TextBox Name="txtDescription" TabIndex="2" Margin="5,5,5,5" TextWrapping="Wrap" AcceptsReturn="True" FontSize="11" FontWeight="Normal">
                                 </TextBox>
                             </ScrollViewer>
-                            <Button Grid.Row="2" Name="btnMoreData" HorizontalAlignment="Center" Content="More data" FontWeight="Normal" FontSize="12" VerticalAlignment="Center" PreviewMouseLeftButtonUp="btnMoreData_PreviewMouseLeftButtonUp" Width="100" HorizontalContentAlignment="Center"/>
+                            <Button Grid.Row="2" Name="btnMoreData" TabIndex="3" HorizontalAlignment="Center" Content="More data" FontWeight="Normal" FontSize="12" VerticalAlignment="Center" PreviewMouseLeftButtonUp="btnMoreData_PreviewMouseLeftButtonUp" Width="100" HorizontalContentAlignment="Center"/>
                             <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Visible" Visibility="Hidden" Name="lowerScrollView">
-                                <TextBox Name="txtNotes" Margin="10,10,10,10" FontSize="11" FontWeight="Normal" AcceptsReturn="True" TextWrapping="Wrap">
+                                <TextBox Name="txtNotes" Margin="10,10,10,10" TabIndex="4" FontSize="11" FontWeight="Normal" AcceptsReturn="True" TextWrapping="Wrap">
                                 </TextBox>
                             </ScrollViewer>
                         </Grid>
