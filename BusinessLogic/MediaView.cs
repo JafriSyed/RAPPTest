@@ -282,6 +282,40 @@ namespace RAPPTest
             }
         }
 
+
+        /// 
+        /// </summary>
+        /// <param name="mediaId"></param>
+        public void UpdateImageLocation(Guid mediaId, Guid mediaFolderId)
+        {
+            try
+            {
+                RappTestEntities rapp = new RappTestEntities();
+                var query = from m in
+                                rapp.Media
+                            where m.MediaFolderId == mediaFolderId
+                            select m.Sequence;
+                int lastSequence = 0;
+                if (query.Count() > 0)
+                    lastSequence = Convert.ToInt32(query.Max());
+
+                var media =  from m in rapp.Media
+                             where m.MediaId == mediaId
+                             select m;
+
+                foreach (var m in media)
+                {
+                    m.MediaFolderId = mediaFolderId;
+                    m.Sequence = lastSequence++;
+                }
+                rapp.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
         /// <summary>
         /// 
         /// </summary>

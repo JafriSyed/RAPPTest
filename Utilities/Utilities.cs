@@ -14,7 +14,7 @@ namespace RAPPTest.Utilities
 {
     public static class Utilities
     {
-        private static string[] _imageFormats = new string[] { ".bmp", ".gif", ".jpg", ".jpeg", ".tif" };
+        private static string[] _imageFormats = new string[] { ".bmp", ".gif", ".jpg", ".jpeg", ".tif", ".png" };
         private static string[] _videoFormats = new string[] { ".avi", ".flv", ".mov", ".mp4", ".mpg", ".wmv" };
         /// <summary>
         /// populates screen saver drop down control

@@ -37,7 +37,7 @@ namespace RAPPTest
 
         private Label _openFolder = null;
         private Button _selectedButton = null;
-
+        private TabItem _lastSelectedTabItem = null;
         #endregion
 
 
@@ -65,7 +65,7 @@ namespace RAPPTest
             CreateUpperGridButtons();
             CreateLowerGridButtons();
             expBrowser.NavigationTarget = ShellFileSystemFolder.FromFolderPath("C:\\");
-            
+            _lastSelectedTabItem = (TabItem)this.tabControl.SelectedItem;
         }
 
         #endregion
@@ -157,6 +157,7 @@ namespace RAPPTest
                 btnGrdUpper.FontFamily = new FontFamily("Arial");
                 btnGrdUpper.Click += new RoutedEventHandler(btn_Click);
                 btnGrdUpper.AllowDrop = true;
+                btnGrdUpper.Drop += new DragEventHandler(OnFolderButtonDrop);
                 btnGrdUpper.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
                     btnGrdUpper.Margin = new Thickness(2, 0, 0, 0);
@@ -167,6 +168,7 @@ namespace RAPPTest
                 btnGrdLower.FontFamily = new FontFamily("Arial");
                 btnGrdLower.Click += new RoutedEventHandler(btn_Click);
                 btnGrdLower.AllowDrop = true;
+                btnGrdLower.Drop += new DragEventHandler(OnFolderButtonDrop);
                 btnGrdLower.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
                     btnGrdLower.Margin = new Thickness(2, 0, 0, 0);
@@ -198,6 +200,7 @@ namespace RAPPTest
                 btnGrdUpper.FontFamily = new FontFamily("Arial");
                 btnGrdUpper.Click += new RoutedEventHandler(btn_Click);
                 btnGrdUpper.AllowDrop = true;
+                btnGrdUpper.Drop += new DragEventHandler(OnFolderButtonDrop);
                 btnGrdUpper.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
                 {
@@ -208,6 +211,7 @@ namespace RAPPTest
                 btnGrdLower.FontFamily = new FontFamily("Arial");
                 btnGrdLower.Click += new RoutedEventHandler(btn_Click);
                 btnGrdLower.AllowDrop = true;
+                btnGrdLower.Drop += new DragEventHandler(OnFolderButtonDrop);
                 btnGrdLower.SetValue(Grid.ColumnProperty, i);
                 if (i > 0)
                 {
@@ -243,7 +247,7 @@ namespace RAPPTest
                     txtImportHeader.Text = "Import images and videos";
                     txtOrganizerHeader.Text = "Organize your media collection";
                     txtScriptHeader.Text = "View and edit media data";
-                } 
+                }
             }
         }
 
@@ -269,6 +273,20 @@ namespace RAPPTest
             dynamicViewbox.Child = myGrid;
         }
 
+
+        private void SaveMedia()
+        {
+            if (lblScriptMediaId.Content != null)
+            {
+                Guid mediaId = (Guid)lblScriptMediaId.Content;
+                MediaView mv = new MediaView();
+                Medium m = new Medium();
+                m.Title = txtTitle.Text;
+                m.Description = txtDescription.Text;
+                m.Notes = txtNotes.Text;
+                mv.UpdateImageData(mediaId, m);
+            }
+        }
 
         #endregion
 
@@ -304,7 +322,23 @@ namespace RAPPTest
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_lastSelectedTabItem != null)
+            {
+                if (_lastSelectedTabItem.TabIndex == 1)
+                {
+                    UpdateTitleandSequence();
+                }
+                else if (_lastSelectedTabItem.TabIndex == 2)
+                {
+                    SaveOrganizerSettings();
+                }
+                else if (_lastSelectedTabItem.TabIndex == 3)
+                {
+                    SaveMedia();
+                }
+            }
 
+            _lastSelectedTabItem = this.tabControl.SelectedItem as TabItem;
         }
 
         private void ImagebucketTab_MouseUp(object sender, MouseButtonEventArgs e)
@@ -360,16 +394,155 @@ namespace RAPPTest
         {
             if (e.Data is DataObject)
             {
-                //deleting the image from the database
-                List<object> droppedItem = (List<object>)e.Data.GetData(e.Data.GetFormats()[0]);
-                Media m = (Media)droppedItem[0];
-                Guid mediaId = (Guid)m.MediaId;
-                MediaView mv = new MediaView();
-                mv.DeleteImage(mediaId);
+                //checking if it's a image on the grid and has not been dropped directly from windows explorer
+                if (e.Data.GetData(e.Data.GetFormats()[0]) is List<object>)
+                {
+                    //deleting the image from the database
+                    List<object> droppedItem = (List<object>)e.Data.GetData(e.Data.GetFormats()[0]);
+                    Media m = (Media)droppedItem[0];
+                    Guid mediaId = (Guid)m.MediaId;
+                    MediaView mv = new MediaView();
+                    mv.DeleteImage(mediaId);
 
-                //binding UI again
-                mv.GetAllMediaData((Guid)lblMediaFolderId.Content);
+                    //binding UI again
+                    mv.GetAllMediaData((Guid)lblMediaFolderId.Content);
+                }
             }
+        }
+
+
+        /// <summary>
+        /// Adding/Moving the image on dropping the folder.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnFolderDrop(object sender, System.Windows.DragEventArgs e)
+        {
+            bool isSameFolder = false;
+            int folderNum = Convert.ToInt32(((Label)sender).Content.ToString());
+            if (folderNum.ToString() == _openFolder.Content)
+                isSameFolder = true;
+
+            Guid mediaFolderId = new Guid();
+            IEnumerable<Folder> folder = MediaView.GetFolderId(folderNum, _selectedButton.Content.ToString());
+            foreach (var f in folder)
+            {
+                mediaFolderId = f.MediaFolderId;
+            }
+            if (e.Data is DataObject)
+            {
+                if (e.Data.GetData(e.Data.GetFormats()[0]) is List<object>)
+                {
+                    List<object> droppedItem = (List<object>)e.Data.GetData(e.Data.GetFormats()[0]);
+                    MoveImageToDifferentFolder(droppedItem, mediaFolderId);
+                }
+
+                else if (((DataObject)e.Data).ContainsFileDropList())
+                {
+                    MoveImagestoDatabaseFromExplorer((DataObject)e.Data, mediaFolderId, isSameFolder);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adding/Moving the image on dropping the folder button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnFolderButtonDrop(object sender, System.Windows.DragEventArgs e)
+        {
+            bool isSameFolder = false;
+            string folderName = ((Button)sender).Content.ToString();
+            if (folderName == _selectedButton.Content)
+                isSameFolder = true;
+
+            Guid mediaFolderId = new Guid();
+            IEnumerable<Folder> folder = MediaView.GetFolderId(Convert.ToInt32(_openFolder.Content.ToString()), folderName);
+            foreach (var f in folder)
+            {
+                mediaFolderId = f.MediaFolderId;
+            }
+
+            if (e.Data is DataObject)
+            {
+                if (e.Data.GetData(e.Data.GetFormats()[0]) is List<object>)
+                {
+                    List<object> droppedItem = (List<object>)e.Data.GetData(e.Data.GetFormats()[0]);
+                    MoveImageToDifferentFolder(droppedItem, mediaFolderId);
+                }
+
+                else if (((DataObject)e.Data).ContainsFileDropList())
+                {
+                    MoveImagestoDatabaseFromExplorer((DataObject)e.Data, mediaFolderId, isSameFolder);
+                }
+            }
+        }
+
+        private void MoveImagestoDatabaseFromExplorer(DataObject data, Guid mediaFolderId, bool isSameFolder)
+        { 
+            //adding images to database after dropping them to the grid.
+            StringBuilder sb = new StringBuilder();
+            MainWindow window = (MainWindow)Application.Current.MainWindow;
+            RappTestEntities mediaEntity = new RappTestEntities();
+            List<Media> lstMedia = new List<Media>();
+            MediaView mv = new MediaView();
+            var query = from m in
+                            mediaEntity.Media
+                        where m.MediaFolderId == mediaFolderId
+                        select m.Sequence;
+            int lastSequence = 0;
+            if (query.Count() > 0)
+                lastSequence = Convert.ToInt32(query.Max());
+
+            //checking if any file has been dropped on the grid
+            int counter = 0;
+            foreach (string filePath in data.GetFileDropList())
+            {
+                try
+                {
+                    if (Utilities.Utilities.IsImage(filePath) || Utilities.Utilities.IsVideo(filePath))
+                    {
+                        lastSequence++;
+                        var fileName = filePath.ToString();
+                        Media m = new Media();
+                        m.Sequence = lastSequence;
+                        m.FileName = Utilities.Utilities.RenameAndMoveFile(filePath.ToString());
+                        m.IsDeleted = false;
+                        m.IsScreenSaver = false;
+                        m.MediaFolderId = mediaFolderId;
+                        lstMedia.Add(m);
+                    }
+                    else
+                    {
+                        if (counter == 0)
+                        {
+                            sb.Append("Following files have incorrect format: ");
+                            sb.Append(Environment.NewLine);
+                            sb.Append(Environment.NewLine);
+                        }
+                        sb.Append(System.IO.Path.GetFileName(filePath));
+                        sb.Append(Environment.NewLine);
+                        counter++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    sb.Append(System.IO.Path.GetFileName(filePath));
+                    sb.Append(Environment.NewLine);
+                }
+            }
+
+            //inserting images and binding the grid again
+            MediaView.InsertImages(lstMedia);
+
+            if (isSameFolder)
+            {
+                MediaImportControl ic = new MediaImportControl();
+                ic.BindImages(mediaFolderId);
+            }
+
+            if (sb.Length > 0)
+                MessageBox.Show(sb.ToString());
         }
 
         private void iconZoomOut_MouseUp(object sender, RoutedEventArgs e)
@@ -388,7 +561,7 @@ namespace RAPPTest
             {
                 //chaning size of each image by looping through the list
                 ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
-                lbi.Width = 120; 
+                lbi.Width = 120;
             }
         }
 
@@ -418,6 +591,53 @@ namespace RAPPTest
             UpdateTitleandSequence();
         }
 
+
+        /// <summary>
+        /// moving the image to different Folder
+        /// </summary>
+        /// <param name="mediaItem"></param>
+        /// <param name="mediaFolderId"></param>
+        private void MoveImageToDifferentFolder(List<object> mediaItem, Guid mediaFolderId)
+        {
+            Media m = (Media)mediaItem[0];
+            Guid mediaId = (Guid)m.MediaId;
+            MediaView mv = new MediaView();
+            mv.UpdateImageLocation(mediaId, mediaFolderId);
+            //binding UI again
+            mv.GetAllMediaData((Guid)lblMediaFolderId.Content);
+        }
+
+        private void SaveOrganizerSettings()
+        {
+            MediaView mv = new MediaView();
+            Medium m = new Medium();
+            List<Medium> lstMedium = new List<Medium>();
+
+            Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
+            int sequence = 0;
+            MediaImportControl mic = dndPanelImport;
+
+            if (lblScriptMediaId.Content != null)
+            {
+                Guid mediaId = (Guid)lblScriptMediaId.Content;
+
+                m.Description = txtDescriptionOrganizer.Text;
+                m.Title = txtTitleOrganizer.Text;
+                m.Notes = txtNotesOrganizer.Text;
+                mv.UpdateImageData(mediaId, m);
+            }
+
+            foreach (Media item in mic.lstImageGallery.Items)
+            {
+                sequence++;
+                Medium mItem = new Medium();
+                mItem.MediaId = item.MediaId;
+                mItem.Sequence = sequence;
+                mItem.FileName = item.FileName;
+                lstMedium.Add(mItem);
+            }
+            mv.UpdateSequence(lstMedium);
+        }
 
         private void UpdateTitleandSequence()
         {
@@ -472,8 +692,24 @@ namespace RAPPTest
                 MediaImportControl ic = new MediaImportControl();
                 ic.BindImages((Guid)lblMediaFolderId.Content);
 
-                imgBucketScrollView.ScrollToVerticalOffset(50);
+                if (this.tabControl.SelectedIndex == 4)
+                {
+                    int folderNum = Convert.ToInt32(_openFolder.Content.ToString());
+                    ObservableCollection<ImageBucket> lstBucket = (ObservableCollection<ImageBucket>)mediaListBox.Tag;
+                    var query = from m in lstBucket
+                                where m.FolderNum <= folderNum
+                                select m;
+                    double sumOffSet = 0;
 
+                    if (folderNum == 1)
+                        sumOffSet = 0;
+                    else if (folderNum == 9 || folderNum == 0)
+                        sumOffSet = imgBucketScrollView.MaxHeight;
+                    else
+                        sumOffSet = lstBucket.Where(l => l.FolderNum <= folderNum).Sum(l => l.Percentage);
+
+                    imgBucketScrollView.ScrollToVerticalOffset(sumOffSet);
+                }
             }
         }
 
@@ -501,49 +737,12 @@ namespace RAPPTest
         private void btnSaveOrganizer_Click(object sender, RoutedEventArgs e)
         {
             //saving description against the images and video files
-
-            MediaView mv = new MediaView();
-            Medium m = new Medium();
-            List<Medium> lstMedium = new List<Medium>();
-
-            Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
-            int sequence = 0;
-            MediaImportControl mic = dndPanelImport;
-
-            if (lblScriptMediaId.Content != null)
-            {
-                Guid mediaId = (Guid)lblScriptMediaId.Content;
-
-                m.Description = txtDescriptionOrganizer.Text;
-                m.Title = txtTitleOrganizer.Text;
-                m.Notes = txtNotesOrganizer.Text;
-                mv.UpdateImageData(mediaId, m);
-            }
-
-            foreach (Media item in mic.lstImageGallery.Items)
-            {
-                sequence++;
-                Medium mItem = new Medium();
-                mItem.MediaId = item.MediaId;
-                mItem.Sequence = sequence;
-                mItem.FileName = item.FileName;
-                lstMedium.Add(mItem);
-            }
-            mv.UpdateSequence(lstMedium);
+            SaveOrganizerSettings();
         }
 
         private void btnSaveMedia_Click(object sender, RoutedEventArgs e)
         {
-            if (lblScriptMediaId.Content != null)
-            {
-                Guid mediaId = (Guid)lblScriptMediaId.Content;
-                MediaView mv = new MediaView();
-                Medium m = new Medium();
-                m.Title = txtTitle.Text;
-                m.Description = txtDescription.Text;
-                m.Notes = txtNotes.Text;
-                mv.UpdateImageData(mediaId, m);
-            }
+            SaveMedia();
         }
 
 
@@ -558,8 +757,6 @@ namespace RAPPTest
         {
             get { return playViewbox; }
         }
-
-
 
         #region Struct
 

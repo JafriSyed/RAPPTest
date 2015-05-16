@@ -70,14 +70,14 @@
                         <Rectangle Fill="#FFCCF600" Height="3" />
                         <Label Foreground="{StaticResource Yellow}" Content="1" HorizontalContentAlignment="Center" Height="35"  
                                VerticalContentAlignment="Center" FontFamily="Arial" FontWeight="Bold" FontSize="22" Margin="0,10,0,0" 
-                               Name="folder1" MouseUp="folder_MouseUp">
+                               Name="folder1" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/PurpleOpenFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
                         </Label>
                         <Label Name="folder2" Foreground="{StaticResource Purple}" Content="2" 
                                HorizontalContentAlignment="Center" Height="35" VerticalContentAlignment="Center" 
-                               FontFamily="Arial" FontWeight="Bold" FontSize="22" Margin="0 3 0 3" MouseUp="folder_MouseUp">
+                               FontFamily="Arial" FontWeight="Bold" FontSize="22" Margin="0 3 0 3" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
@@ -85,7 +85,7 @@
                         <Label Name="folder3" Foreground="{StaticResource Purple}" Content="3" HorizontalContentAlignment="Center" Height="35" 
                                VerticalContentAlignment="Center" 
                                FontFamily="Arial" FontWeight="Bold" FontSize="22" 
-                               Margin="0 3 0 3" MouseUp="folder_MouseUp">
+                               Margin="0 3 0 3" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
@@ -93,53 +93,53 @@
                         <Label Name="folder4" Foreground="{StaticResource Purple}" Content="4" HorizontalContentAlignment="Center" Height="35" 
                                VerticalContentAlignment="Center" 
                                FontFamily="Arial" FontWeight="Bold" FontSize="22" 
-                               Margin="0 3 0 3" MouseUp="folder_MouseUp">
+                               Margin="0 3 0 3" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
                         </Label>
                         <Label Name="folder5" Foreground="{StaticResource Purple}" Content="5" HorizontalContentAlignment="Center" Height="35" 
                                VerticalContentAlignment="Center" FontFamily="Arial" FontWeight="Bold" FontSize="22" 
-                               Margin="0 3 0 3" MouseUp="folder_MouseUp">
+                               Margin="0 3 0 3" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
                         </Label>
                         <Label Name="folder6" Foreground="{StaticResource Purple}" Content="6" HorizontalContentAlignment="Center" Height="35" 
                                VerticalContentAlignment="Center" FontFamily="Arial" FontWeight="Bold" FontSize="22"
-                               Margin="0 3 0 3" MouseUp="folder_MouseUp">
+                               Margin="0 3 0 3" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
                         </Label>
                         <Label Name="folder7" Foreground="{StaticResource Purple}" Content="7" Height="35" HorizontalContentAlignment="Center" 
                                VerticalContentAlignment="Center" FontFamily="Arial" FontWeight="Bold" FontSize="22" 
-                               Margin="0 3 0 3" MouseUp="folder_MouseUp">
+                               Margin="0 3 0 3" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
                         </Label>
                         <Label Name="folder8" Foreground="{StaticResource Purple}" Content="8" Height="35" HorizontalContentAlignment="Center" 
                                VerticalContentAlignment="Center" FontFamily="Arial" FontWeight="Bold" FontSize="22" 
-                               Margin="0 3 0 3" MouseUp="folder_MouseUp">
+                               Margin="0 3 0 3" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
                         </Label>
                         <Label Name="folder9" Foreground="{StaticResource Purple}" Content="9" Height="35" HorizontalContentAlignment="Center" 
                                VerticalContentAlignment="Center" FontFamily="Arial" FontWeight="Bold" FontSize="22" 
-                               Margin="0 3 0 3" MouseUp="folder_MouseUp">
+                               Margin="0 3 0 3" MouseUp="folder_MouseUp" AllowDrop="True" Drop="OnFolderDrop">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
                         </Label>
-                        <Label Name="folder0" Foreground="{StaticResource Purple}" Height="35" Content="0" HorizontalContentAlignment="Center" 
+                        <!--<Label Name="folder0" Foreground="{StaticResource Purple}" Height="35" Content="0" HorizontalContentAlignment="Center" 
                                VerticalContentAlignment="Center" FontFamily="Arial" FontWeight="Bold" FontSize="22" 
                                Margin="0 3 0 3" MouseUp="folder_MouseUp">
                             <Label.Background>
                                 <ImageBrush ImageSource="/Resources/YellowClosedFolder.png" Stretch="Uniform" TileMode="None" />
                             </Label.Background>
-                        </Label>
+                        </Label>-->
                     </StackPanel>
                     <Image Name="rubbishBin" Drop="OnRecycleDrop" Margin="0 0 0 10"  AllowDrop="True"  Source="/Resources/RecycleBin.png"  DockPanel.Dock="Bottom" Grid.Row="1"></Image>
                 </Grid>
@@ -240,8 +240,8 @@
                             </Grid>
                             <Grid Grid.Column="1" Margin="40 0 10 0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="22" />
-                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="15" />
+                                    <ColumnDefinition Width="18" />
                                     <ColumnDefinition Width="22" />
                                 </Grid.ColumnDefinitions>
 
@@ -273,7 +273,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Selector.IsSelected="True"    Header="Organize" Name="organize" FontWeight="Bold" FontSize="14"  Style="{StaticResource tabItemStyle}">
+            <TabItem Selector.IsSelected="True" Header="Organize" Name="organize" FontWeight="Bold" FontSize="14"  Style="{StaticResource tabItemStyle}">
                 <Grid HorizontalAlignment="Stretch">
 
                     <Grid.Background>
@@ -349,25 +349,25 @@
                             </Grid>
                             <Grid Grid.Column="1" Margin="40 0 10 0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="22" />
-                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="15" />
+                                    <ColumnDefinition Width="18" />
                                     <ColumnDefinition Width="22" />
                                 </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center" Margin="2,0,0,0">
+                                <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
                                     <Button Click="iconZoomOut_MouseUp" Style="{StaticResource TransparentButton}">
                                         <Button.Content>
                                             <Image Source="/Resources/small.png" />
                                         </Button.Content>
                                     </Button>
                                 </StackPanel>
-                                <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,2,0">
+                                <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">
                                     <Button Click="iconZoomMax_MouseUp" Style="{StaticResource TransparentButton}">
                                         <Button.Content>
                                             <Image Source="/Resources/large.png" />
                                         </Button.Content>
                                     </Button>
                                 </StackPanel>
-                                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,2,0">
+                                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
                                     <Button Click="iconZoomIn_MouseUp" Style="{StaticResource TransparentButton}">
                                         <Button.Content>
                                             <Image Source="/Resources/medium.png" />
