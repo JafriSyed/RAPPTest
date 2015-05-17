@@ -54,7 +54,12 @@
                             <Setter Property="telerik:DragDropManager.AllowDrag" Value="True" />
                             <Setter Property="telerik:DragDropManager.AllowCapturedDrag" Value="True" />
                             <Setter Property="telerik:DragDropManager.TouchDragTrigger" Value="TapAndHold"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True" >
+                                </Trigger>
+                            </Style.Triggers>
                         </Style>
+
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>

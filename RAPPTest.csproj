@@ -98,6 +98,7 @@
     <Compile Include="Classes\Events.cs" />
     <Compile Include="Classes\IView.cs" />
     <Compile Include="Classes\PlayView.cs" />
+    <Compile Include="Classes\ScreenSaver.cs" />
     <Compile Include="Classes\View.cs" />
     <Compile Include="Classes\WPFwindow.cs" />
     <Compile Include="RappTestModel.Designer.cs">

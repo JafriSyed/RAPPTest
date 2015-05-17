@@ -253,24 +253,11 @@ namespace RAPPTest
 
         private void ShowScreenSaver()
         {
-            PlayView playView = new PlayView();
-            RappTestEntities rappRntity = new RappTestEntities();
-            IEnumerable<Media> media = from m in rappRntity.Media
-                                       where m.IsScreenSaver == true
-                                       select new Media { FileName = m.FileName };
-            Viewbox dynamicViewbox = new Viewbox();
-            System.Windows.Controls.Grid myGrid = new Grid();
-
-            if (media.Count() > 0)
+            if (!ScreenSaver.IsOpen())
             {
-                foreach (Media m in media)
-                {
-                    MainWindow window = (MainWindow)Application.Current.MainWindow;
-                    this.Show();
-                    myGrid.Children.Add(m.GetUIElement());
-                }
+                ScreenSaver.InitializeActions();
+                ScreenSaver.ShowScreenSaver();
             }
-            dynamicViewbox.Child = myGrid;
         }
 
 
@@ -286,7 +273,11 @@ namespace RAPPTest
                 m.Notes = txtNotes.Text;
                 mv.UpdateImageData(mediaId, m);
             }
+            Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
+            UpdateMediaFolderTitle(mediaFolderId, txtScriptHeader.Text);
         }
+
+        //private void UpdateFolderTitle(string )
 
         #endregion
 
@@ -322,20 +313,9 @@ namespace RAPPTest
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_lastSelectedTabItem != null)
+            if (_lastSelectedTabItem != null && lblMediaFolderId.Content != null)
             {
-                if (_lastSelectedTabItem.TabIndex == 1)
-                {
-                    UpdateTitleandSequence();
-                }
-                else if (_lastSelectedTabItem.TabIndex == 2)
-                {
-                    SaveOrganizerSettings();
-                }
-                else if (_lastSelectedTabItem.TabIndex == 3)
-                {
-                    SaveMedia();
-                }
+                SaveDetails();
             }
 
             _lastSelectedTabItem = this.tabControl.SelectedItem as TabItem;
@@ -362,6 +342,8 @@ namespace RAPPTest
             Button btn = sender as Button;
             if (btn != null)
             {
+                SaveDetails(); 
+
                 //setting active folder on the bottom of the UI
                 activeBtn.Content = btn.Content;
                 activeBtnImport.Content = btn.Content;
@@ -382,6 +364,8 @@ namespace RAPPTest
                 MediaImportControl ic = new MediaImportControl();
                 ic.BindImages((Guid)lblMediaFolderId.Content);
 
+                if (this.tabControl.SelectedIndex == 3)
+                    this.tabControl.SelectedIndex = 2;
             }
         }
 
@@ -420,7 +404,7 @@ namespace RAPPTest
         {
             bool isSameFolder = false;
             int folderNum = Convert.ToInt32(((Label)sender).Content.ToString());
-            if (folderNum.ToString() == _openFolder.Content)
+            if (folderNum.ToString() == _openFolder.Content.ToString())
                 isSameFolder = true;
 
             Guid mediaFolderId = new Guid();
@@ -453,7 +437,7 @@ namespace RAPPTest
         {
             bool isSameFolder = false;
             string folderName = ((Button)sender).Content.ToString();
-            if (folderName == _selectedButton.Content)
+            if (folderName == _selectedButton.Content.ToString())
                 isSameFolder = true;
 
             Guid mediaFolderId = new Guid();
@@ -607,6 +591,22 @@ namespace RAPPTest
             mv.GetAllMediaData((Guid)lblMediaFolderId.Content);
         }
 
+        private void SaveDetails()         
+        {
+            if (_lastSelectedTabItem.Header.ToString() == "Import")
+            {
+                UpdateTitleandSequence();
+            }
+            else if (_lastSelectedTabItem.Header.ToString() == "Organize")
+            {
+                SaveOrganizerSettings();
+            }
+            else if (_lastSelectedTabItem.Header.ToString() == "Script")
+            {
+                SaveMedia();
+            }     
+        }
+
         private void SaveOrganizerSettings()
         {
             MediaView mv = new MediaView();
@@ -637,6 +637,8 @@ namespace RAPPTest
                 lstMedium.Add(mItem);
             }
             mv.UpdateSequence(lstMedium);
+
+            UpdateMediaFolderTitle(mediaFolderId, txtOrganizerHeader.Text);
         }
 
         private void UpdateTitleandSequence()
@@ -661,9 +663,18 @@ namespace RAPPTest
 
             //binding list again.
             mic.BindImages(mediaFolderId);
+            UpdateMediaFolderTitle(mediaFolderId, txtImportHeader.Text);
+          
+        }
 
-            string title = mv.UpdateMediaFolderTitle(mediaFolderId, txtImportHeader.Text);
+
+        private void UpdateMediaFolderTitle(Guid mediaFolderId, string title)
+        {
+            MediaView mv = new MediaView();
+            mv.UpdateMediaFolderTitle(mediaFolderId, title);           
             txtImportHeader.Text = title;
+            txtScriptHeader.Text = title;
+            txtOrganizerHeader.Text = title;
         }
 
         /// <summary>
@@ -677,6 +688,8 @@ namespace RAPPTest
             Label clickedFolder = sender as Label;
             if (clickedFolder != null)
             {
+                SaveDetails();
+
                 if (clickedFolder != _openFolder)
                 {
                     clickedFolder.Background = this.FindResource("openFolderIcon") as ImageBrush;
@@ -710,6 +723,10 @@ namespace RAPPTest
 
                     imgBucketScrollView.ScrollToVerticalOffset(sumOffSet);
                 }
+
+                if (this.tabControl.SelectedIndex == 3)
+                    this.tabControl.SelectedIndex = 1;
+
             }
         }
 

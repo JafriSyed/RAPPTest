@@ -22,17 +22,17 @@ namespace RAPPTest
         private WPFWindow _fullScreenWindow;
         private showcaseList _showcase = null;
 
-        //public PlayView(TabItem playTabItem, Viewbox playViewbox)
-        //{
-        //    //intializing all the components withing playbox tab
+        public PlayView(TabItem playTabItem, Viewbox playViewbox)
+        {
+            //intializing all the components withing playbox tab
+            
+            this._playTabItem = playTabItem;
+            this._playViewbox = playViewbox;
+            this._fullScreenWindow = new WPFWindow(this);
+            base.ChangeRequestEvents = new ChangeRequestEvents(this);
 
-        //    this._playTabItem = playTabItem;
-        //    this._playViewbox = playViewbox;
-        //    this._fullScreenWindow = new WPFWindow(this);
-        //    base.ChangeRequestEvents = new ChangeRequestEvents(this);
-
-        //    InitializeActions();
-        //}
+            InitializeActions();
+        }
 
         public PlayView()
         {
@@ -58,36 +58,20 @@ namespace RAPPTest
                 this.getWPFWindow.Hide();
                 this.getWPFWindow.Visibility = System.Windows.Visibility.Hidden;
                 this.getWPFWindow.setIsOpen = false;
+                MainWindow window = (MainWindow)Application.Current.MainWindow;
+                window.tabControl.SelectedIndex = 2;
+                StopVideo();
+               
             }
 
             if (e.Key == System.Windows.Input.Key.Up)
             {
-                System.Windows.Controls.Grid myGrid = (Grid)this.getWPFWindow.dynamicViewbox.Tag;
-                if (myGrid.Children.Count > 0)
-                {
-                    if (myGrid.Children[0] is MediaElement)
-                    {
-                        MediaElement me = (MediaElement)myGrid.Children[0];
-                        me.UnloadedBehavior = MediaState.Manual;
-                        me.LoadedBehavior = MediaState.Manual;
-                        me.Pause();
-                    }
-                }
+                PauseVideo();
             }
 
             if (e.Key == System.Windows.Input.Key.Down)
             {
-                System.Windows.Controls.Grid myGrid = (Grid)this.getWPFWindow.dynamicViewbox.Tag;
-                if (myGrid.Children.Count > 0)
-                {
-                    if (myGrid.Children[0] is MediaElement)
-                    {
-                        MediaElement me = (MediaElement)myGrid.Children[0];
-                        me.UnloadedBehavior = MediaState.Manual;
-                        me.LoadedBehavior = MediaState.Manual;
-                        me.Play();
-                    }
-                }
+                PlayVideo();
             }
 
             if (e.Key == System.Windows.Input.Key.Space)
@@ -97,17 +81,18 @@ namespace RAPPTest
             }
 
            
-
             if (e.Key == System.Windows.Input.Key.Left)
             {
-                // goto previous media file
+                StopVideo();
                 this.PerformPrevButtonClick();
+          
             }
 
             if (e.Key == System.Windows.Input.Key.Right)
             {
-                //goto next media file
+                StopVideo();
                 this.PerformNextButtonClick();
+                
             }
         }
 
@@ -116,6 +101,7 @@ namespace RAPPTest
             if (e.Key >= System.Windows.Input.Key.D0 && e.Key <= System.Windows.Input.Key.D9)
             {
                 //checking if any key between 0 and 9 is pressed
+                StopVideo();
                 string folderName = e.Key.ToString().Substring(1, 1);
                 this.PerformFolderChange(folderName);
                 this.getWPFWindow.SetFolderName(folderName);
@@ -129,6 +115,7 @@ namespace RAPPTest
         {
             if (e.Key >= System.Windows.Input.Key.A && e.Key <= System.Windows.Input.Key.Z)
             {
+                StopVideo();
                 //checking if any key between a-z is pressed
                 string keyName = e.Key.ToString();
                 this.PerformKeyChange(keyName);
@@ -148,7 +135,6 @@ namespace RAPPTest
                 this.getWPFWindow.SetKeyName(keyName);
                 this.getWPFWindow.KeyUp -= new KeyEventHandler(WindowKeyUpAfter0_9);
                 this.getWPFWindow.KeyUp += new KeyEventHandler(KeyUpA_Z);
-                
                 BindMediaList(this.getWPFWindow.getFolderName(), keyName);
             
             }
@@ -278,6 +264,50 @@ namespace RAPPTest
             get { return _fullScreenWindow.IsOpen; }
         }
 
+        private void PlayVideo()
+        {
+            System.Windows.Controls.Grid myGrid = (Grid)this.getWPFWindow.dynamicViewbox.Tag;
+            if (myGrid.Children.Count > 0)
+            {
+                if (myGrid.Children[0] is MediaElement)
+                {
+                    MediaElement me = (MediaElement)myGrid.Children[0];
+                    me.UnloadedBehavior = MediaState.Manual;
+                    me.LoadedBehavior = MediaState.Manual;
+                    me.Play();
+                }
+            }
+        }
+
+        private void PauseVideo()
+        {
+            System.Windows.Controls.Grid myGrid = (Grid)this.getWPFWindow.dynamicViewbox.Tag;
+            if (myGrid.Children.Count > 0)
+            {
+                if (myGrid.Children[0] is MediaElement)
+                {
+                    MediaElement me = (MediaElement)myGrid.Children[0];
+                    me.UnloadedBehavior = MediaState.Manual;
+                    me.LoadedBehavior = MediaState.Manual;
+                    me.Pause();
+                }
+            }       
+        }
+        
+        private void StopVideo()
+        {
+            System.Windows.Controls.Grid myGrid = (Grid)this.getWPFWindow.dynamicViewbox.Tag;
+            if (myGrid != null && myGrid.Children.Count > 0)
+            {
+                if (myGrid.Children[0] is MediaElement)
+                {
+                    MediaElement me = (MediaElement)myGrid.Children[0];
+                    me.UnloadedBehavior = MediaState.Manual;
+                    me.LoadedBehavior = MediaState.Manual;
+                    me.Stop();
+                }
+            }
+        }
 
         public void EnterFullScreen()
         {

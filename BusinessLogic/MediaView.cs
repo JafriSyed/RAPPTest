@@ -79,7 +79,7 @@ namespace RAPPTest
         /// </summary>
         /// <param name="mediaId"></param>
         /// <returns></returns>
-        public string UpdateMediaFolderTitle(Guid mediaFolderId, string title)
+        public void UpdateMediaFolderTitle(Guid mediaFolderId, string title)
         {
             try
             {
@@ -95,7 +95,6 @@ namespace RAPPTest
                 }
 
                 rappEntity.SaveChanges();
-                return title;
             }
             catch (Exception ex)
             {
@@ -306,7 +305,7 @@ namespace RAPPTest
                 foreach (var m in media)
                 {
                     m.MediaFolderId = mediaFolderId;
-                    m.Sequence = lastSequence++;
+                    m.Sequence = lastSequence + 1;
                 }
                 rapp.SaveChanges();
 

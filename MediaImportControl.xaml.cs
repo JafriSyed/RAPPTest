@@ -229,7 +229,7 @@ namespace RAPPTest
 
             //checking if file is video then replace the video extension with jpg to show as thumbnail
             string fileName = Utilities.Utilities.IsVideo(m.FileName) ? Utilities.Utilities.ReplaceVideoExtension(m.FileName) : m.FileName;
-            window.imgScript.Source = new BitmapImage(new Uri(System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "\\Media\\" + fileName));
+            window.imgScript.Source = new BitmapImage(new Uri(System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "\\Media\\Thumbnails\\" + fileName));
             window.lblOrganizerMediaId.Content = mediaId;
             window.txtTitle.Text = m.Title;
             window.txtDescription.Text = m.Description;
