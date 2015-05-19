@@ -11,7 +11,8 @@ namespace RAPPTest
 {
     public static class ScreenSaver
     {
-        private static WPFWindow _screenSaverWindow;
+        public static WPFWindow _screenSaverWindow;
+        static Viewbox _dynamicViewbox = new Viewbox();
 
         public static bool IsOpen()
         {
@@ -27,27 +28,54 @@ namespace RAPPTest
         {
             _screenSaverWindow = new WPFWindow();
             _screenSaverWindow.KeyUp += new KeyEventHandler(KeyPress);
-            _screenSaverWindow.MouseMove += new MouseEventHandler(MouseMove);
+            _screenSaverWindow.MouseLeftButtonDown += new MouseButtonEventHandler(_screenSaverWindow_MouseLeftButtonDown);
+            _screenSaverWindow.MouseRightButtonDown += new MouseButtonEventHandler(_screenSaverWindow_MouseLeftButtonDown);
         }
 
 
         private static void KeyPress(object sender, KeyEventArgs e)
         {
             // handling all the key events 
+            StopVideo();
             _screenSaverWindow.Hide();
             _screenSaverWindow.Visibility = System.Windows.Visibility.Hidden;
             _screenSaverWindow.isOpen = false;
-
+            
         }
 
-        private static void MouseMove(object sender, MouseEventArgs e)
+        private static void StopVideo()
         {
-            //if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed)
-            //{
-            //    _screenSaverWindow.Hide();
-            //    _screenSaverWindow.Visibility = System.Windows.Visibility.Hidden;
-            //    _screenSaverWindow.isOpen = false;
-            //}
+            System.Windows.Controls.Grid myGrid = (Grid)_dynamicViewbox.Tag;
+            if (myGrid.Children.Count > 0)
+            {
+                if (myGrid.Children[0] is MediaElement)
+                {
+                    MediaElement me = (MediaElement)myGrid.Children[0];
+                    me.Stop();
+                }
+            }
+        }
+
+        private static void PlayVideo()
+        {
+            System.Windows.Controls.Grid myGrid = (Grid)_dynamicViewbox.Tag;
+            if (myGrid.Children.Count > 0)
+            {
+                if (myGrid.Children[0] is MediaElement)
+                {
+                    MediaElement me = (MediaElement)myGrid.Children[0];
+                    me.Position = TimeSpan.Zero;
+                    me.LoadedBehavior = MediaState.Play;
+                    me.Play();
+                }
+            }
+        }
+
+        private static void _screenSaverWindow_MouseLeftButtonDown(object sender, MouseEventArgs e)
+        {
+            _screenSaverWindow.Hide();
+            _screenSaverWindow.Visibility = System.Windows.Visibility.Hidden;
+            _screenSaverWindow.isOpen = false;
         }
 
         public static void ShowScreenSaver()
@@ -55,27 +83,43 @@ namespace RAPPTest
             if (_screenSaverWindow.isOpen)
                 return;
 
+
+            if (Application.Current.MainWindow is MainWindow)
+            {
+                MainWindow window = (MainWindow)Application.Current.MainWindow;
+                if (window.WindowState == System.Windows.WindowState.Minimized)
+                {
+                    window.WindowState = System.Windows.WindowState.Maximized;
+                }
+            }
+
+
             if (Application.Current.MainWindow is MainWindow)
             {
                 RappTestEntities rappRntity = new RappTestEntities();
                 IEnumerable<Media> media = from m in rappRntity.Media
                                            where m.IsScreenSaver == true
                                            select new Media { FileName = m.FileName };
-                Viewbox dynamicViewbox = new Viewbox();
+               
                 System.Windows.Controls.Grid myGrid = new Grid();
 
                 if (media.Count() > 0)
                 {
                     foreach (Media m in media)
                     {
-                        MainWindow window = (MainWindow)Application.Current.MainWindow;
+                        MainWindow mainwindow = (MainWindow)Application.Current.MainWindow;
                         _screenSaverWindow.EnterFullScreen(m);
-                        myGrid.Children.Add(m.GetUIElement());
                     }
                 }
-                dynamicViewbox.Child = myGrid;
+               
             }
         }
+
+        ////loop to keep video playing continuously
+        private static void me_MediaEnded(object sender, EventArgs e)
+        {
+            PlayVideo();
+        }    
 
         private static void EnterFullScreen(Media e)
         {
@@ -101,10 +145,10 @@ namespace RAPPTest
                 WindowStyle = WindowStyle.None;
                 WindowState = WindowState.Maximized;
                 ResizeMode = ResizeMode.NoResize;
-                dynamicViewbox = new Viewbox();
+                dynamicViewbox = _dynamicViewbox;
                 dynamicViewbox.StretchDirection = StretchDirection.Both;
                 dynamicViewbox.Stretch = Stretch.Uniform;
-
+               
                 this.Content = dynamicViewbox;
             }
 
@@ -128,7 +172,16 @@ namespace RAPPTest
                 {
                     myGrid.Children.Add(media.GetUIElement());
                 }
+                dynamicViewbox.Tag = myGrid;
                 dynamicViewbox.Child = myGrid;
+                if (myGrid != null && myGrid.Children.Count > 0)
+                {
+                    if (myGrid.Children[0] is MediaElement)
+                    {
+                        MediaElement me = (MediaElement)myGrid.Children[0];
+                        me.MediaEnded += new RoutedEventHandler(me_MediaEnded);
+                    }
+                }
             }
         }
     }

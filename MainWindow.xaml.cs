@@ -305,7 +305,7 @@ namespace RAPPTest
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            if (GetIdleTime() > Convert.ToInt32(/*screenSaverTimer.SelectedValue*/10) * 1000)  //10 secs, Time to wait before locking
+            if (GetIdleTime() > /*Convert.ToInt32(screenSaverTimer.SelectedValue)*/ 5 * 1000)  //10 secs, Time to wait before locking
             {
                 ShowScreenSaver();
             }
@@ -342,7 +342,7 @@ namespace RAPPTest
             Button btn = sender as Button;
             if (btn != null)
             {
-                SaveDetails(); 
+                SaveDetails();
 
                 //setting active folder on the bottom of the UI
                 activeBtn.Content = btn.Content;
@@ -359,6 +359,9 @@ namespace RAPPTest
                     _selectedButton = btn;
                 }
 
+                _selectedButton.Background = Brushes.Purple;
+                _selectedButton.Foreground = Brushes.Yellow;
+                Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
                 //binding images after fetching them from the database by providing media folder id
                 GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
                 MediaImportControl ic = new MediaImportControl();
@@ -366,6 +369,14 @@ namespace RAPPTest
 
                 if (this.tabControl.SelectedIndex == 3)
                     this.tabControl.SelectedIndex = 2;
+
+
+                if (mediaFolderId != (Guid)lblMediaFolderId.Content)
+                {
+                    lblScriptMediaId.Content = null;
+                    lblOrganizerMediaId.Content = null;
+                    EmptyFields();
+                }
             }
         }
 
@@ -500,7 +511,7 @@ namespace RAPPTest
                     {
                         if (counter == 0)
                         {
-                            sb.Append("Following files have incorrect format: ");
+                            sb.Append("Following files you are trying to import appears to be corrupt: ");
                             sb.Append(Environment.NewLine);
                             sb.Append(Environment.NewLine);
                         }
@@ -566,7 +577,7 @@ namespace RAPPTest
 
             PlayView playView = new PlayView();
             playView.EnterFullScreen();
-            this.tabControl.SelectedIndex = 5;
+            this.tabControl.SelectedIndex = 2;
             return;
         }
 
@@ -604,7 +615,7 @@ namespace RAPPTest
             else if (_lastSelectedTabItem.Header.ToString() == "Script")
             {
                 SaveMedia();
-            }     
+            }
         }
 
         private void SaveOrganizerSettings()
@@ -684,11 +695,15 @@ namespace RAPPTest
         /// <param name="e"></param>
         private void folder_MouseUp(object sender, MouseButtonEventArgs e)
         {
+           
             //styling folder buttons when clicked
             Label clickedFolder = sender as Label;
             if (clickedFolder != null)
             {
                 SaveDetails();
+
+                if (clickedFolder == _openFolder && this.tabControl.SelectedIndex == 3)
+                    return;
 
                 if (clickedFolder != _openFolder)
                 {
@@ -716,7 +731,7 @@ namespace RAPPTest
 
                     if (folderNum == 1)
                         sumOffSet = 0;
-                    else if (folderNum == 9 || folderNum == 0)
+                    else if (folderNum == 9)
                         sumOffSet = imgBucketScrollView.MaxHeight;
                     else
                         sumOffSet = lstBucket.Where(l => l.FolderNum <= folderNum).Sum(l => l.Percentage);
@@ -725,9 +740,24 @@ namespace RAPPTest
                 }
 
                 if (this.tabControl.SelectedIndex == 3)
-                    this.tabControl.SelectedIndex = 1;
+                    this.tabControl.SelectedIndex = 2;
 
+
+                lblScriptMediaId.Content = null;
+                lblOrganizerMediaId.Content = null;
+                EmptyFields();
             }
+        }
+
+        private void EmptyFields()
+        {
+            txtDescription.Text = string.Empty;
+            txtDescriptionOrganizer.Text = string.Empty;
+            txtNotes.Text = string.Empty;
+            txtNotesOrganizer.Text = string.Empty;
+            txtTitle.Text = string.Empty;
+            txtTitleOrganizer.Text = string.Empty;
+            imgScript.Source = null;
         }
 
         private void btnMoreData_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

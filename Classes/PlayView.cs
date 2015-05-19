@@ -9,6 +9,7 @@ using System.Windows;
 using System.Threading;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace RAPPTest
 {
@@ -61,7 +62,7 @@ namespace RAPPTest
                 MainWindow window = (MainWindow)Application.Current.MainWindow;
                 window.tabControl.SelectedIndex = 2;
                 StopVideo();
-               
+                ScreenSaver._screenSaverWindow.isOpen = false;
             }
 
             if (e.Key == System.Windows.Input.Key.Up)
@@ -77,7 +78,29 @@ namespace RAPPTest
             if (e.Key == System.Windows.Input.Key.Space)
             {
                 //show description
-                this.getWPFWindow.SetViewboxContent(this.getMedia);
+                System.Windows.Controls.Grid myGrid = (Grid)this.getWPFWindow.dynamicViewbox.Tag;
+                if (myGrid != null && myGrid.Children.Count > 0)
+                {
+                    if (myGrid.Children[0] is MediaElement)
+                    {
+                        MediaElement me = (MediaElement)myGrid.Children[0];
+                        me.UnloadedBehavior = MediaState.Manual;
+                        me.LoadedBehavior = MediaState.Manual;
+                        FieldInfo hlp = typeof(MediaElement).GetField("_helper", BindingFlags.NonPublic | BindingFlags.Instance);
+                        object helperObject = hlp.GetValue(me);
+                        FieldInfo stateField = helperObject.GetType().GetField("_currentState", BindingFlags.NonPublic | BindingFlags.Instance);
+                        MediaState state = (MediaState)stateField.GetValue(helperObject);
+                        if (state == MediaState.Pause) 
+                        {
+                            me.Play();
+                        }
+                        else if (state == MediaState.Play)
+                        {
+                            me.Pause();
+                        }
+                    }
+                }
+                //this.getWPFWindow.SetViewboxContent(this.getMedia);
             }
 
            
@@ -98,7 +121,7 @@ namespace RAPPTest
 
         private void KeyUp0_9(object sender, KeyEventArgs e)
         {
-            if (e.Key >= System.Windows.Input.Key.D0 && e.Key <= System.Windows.Input.Key.D9)
+            if (e.Key >= System.Windows.Input.Key.D1 && e.Key <= System.Windows.Input.Key.D9)
             {
                 //checking if any key between 0 and 9 is pressed
                 StopVideo();
@@ -396,6 +419,11 @@ namespace RAPPTest
 
             public void EnterFullScreen(Media media)
             {
+                if (ScreenSaver._screenSaverWindow == null)
+                    ScreenSaver.InitializeActions();
+
+                ScreenSaver._screenSaverWindow.isOpen = true;
+
                 MainWindow window = (MainWindow)Application.Current.MainWindow;
                 this.Show();
                 isOpen = true;
