@@ -305,7 +305,7 @@ namespace RAPPTest
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            if (GetIdleTime() > /*Convert.ToInt32(screenSaverTimer.SelectedValue)*/ 5 * 1000)  //10 secs, Time to wait before locking
+            if (GetIdleTime() > Convert.ToInt32(screenSaverTimer.SelectedValue) * 1000)  //10 secs, Time to wait before locking
             {
                 ShowScreenSaver();
             }
