@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
+using System.Runtime.InteropServices;
 
 namespace RAPPTest
 {
@@ -13,6 +14,8 @@ namespace RAPPTest
     {
         public static WPFWindow _screenSaverWindow;
         static Viewbox _dynamicViewbox = new Viewbox();
+        private static Shell32.Shell shellInterface = new Shell32.Shell();
+        private static Point _originalPosition = new Point();
 
         public static bool IsOpen()
         {
@@ -30,8 +33,22 @@ namespace RAPPTest
             _screenSaverWindow.KeyUp += new KeyEventHandler(KeyPress);
             _screenSaverWindow.MouseLeftButtonDown += new MouseButtonEventHandler(_screenSaverWindow_MouseLeftButtonDown);
             _screenSaverWindow.MouseRightButtonDown += new MouseButtonEventHandler(_screenSaverWindow_MouseLeftButtonDown);
+            _screenSaverWindow.MouseMove += new MouseEventHandler(_screenSaverWindow_MouseMove);
+
         }
 
+        private static void _screenSaverWindow_MouseMove(object sender, MouseEventArgs e)
+        {
+            Point currentPosition = GetMousePosition();
+            if (currentPosition != _originalPosition)
+            {
+                StopVideo();
+                _screenSaverWindow.Hide();
+                _screenSaverWindow.Visibility = System.Windows.Visibility.Hidden;
+                _screenSaverWindow.isOpen = false;
+            }
+            
+        }
 
         private static void KeyPress(object sender, KeyEventArgs e)
         {
@@ -51,6 +68,8 @@ namespace RAPPTest
                 if (myGrid.Children[0] is MediaElement)
                 {
                     MediaElement me = (MediaElement)myGrid.Children[0];
+                    me.LoadedBehavior = MediaState.Manual;
+                    me.UnloadedBehavior = MediaState.Manual;
                     me.Stop();
                 }
             }
@@ -73,6 +92,7 @@ namespace RAPPTest
 
         private static void _screenSaverWindow_MouseLeftButtonDown(object sender, MouseEventArgs e)
         {
+            StopVideo();
             _screenSaverWindow.Hide();
             _screenSaverWindow.Visibility = System.Windows.Visibility.Hidden;
             _screenSaverWindow.isOpen = false;
@@ -80,20 +100,12 @@ namespace RAPPTest
 
         public static void ShowScreenSaver()
         {
+            MinimizeAll();
+            _originalPosition = GetMousePosition();
+            
             if (_screenSaverWindow.isOpen)
                 return;
-
-
-            if (Application.Current.MainWindow is MainWindow)
-            {
-                MainWindow window = (MainWindow)Application.Current.MainWindow;
-                if (window.WindowState == System.Windows.WindowState.Minimized)
-                {
-                    window.WindowState = System.Windows.WindowState.Maximized;
-                }
-            }
-
-
+         
             if (Application.Current.MainWindow is MainWindow)
             {
                 RappTestEntities rappRntity = new RappTestEntities();
@@ -115,6 +127,12 @@ namespace RAPPTest
             }
         }
 
+        private static void MinimizeAll()
+        {
+            System.Threading.Thread.Sleep(3000);
+            shellInterface.MinimizeAll();
+        }
+
         ////loop to keep video playing continuously
         private static void me_MediaEnded(object sender, EventArgs e)
         {
@@ -125,6 +143,24 @@ namespace RAPPTest
         {
             _screenSaverWindow.EnterFullScreen(e);
             _screenSaverWindow.isOpen = true;
+        }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool GetCursorPos(ref Win32Point pt);
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct Win32Point
+        {
+            public Int32 X;
+            public Int32 Y;
+        };
+
+        private static Point GetMousePosition()
+        {
+            Win32Point w32Mouse = new Win32Point();
+            GetCursorPos(ref w32Mouse);
+            return new Point(w32Mouse.X, w32Mouse.Y);
         }
 
         public class WPFWindow : Window
@@ -156,6 +192,7 @@ namespace RAPPTest
             public void EnterFullScreen(Media media)
             {
                 MainWindow window = (MainWindow)Application.Current.MainWindow;
+                window.WindowState = System.Windows.WindowState.Maximized;
                 this.Show();
                 isOpen = true;
                 if (media != null)
@@ -179,10 +216,14 @@ namespace RAPPTest
                     if (myGrid.Children[0] is MediaElement)
                     {
                         MediaElement me = (MediaElement)myGrid.Children[0];
+                        me.UnloadedBehavior = MediaState.Manual;
+                        me.LoadedBehavior = MediaState.Manual;
                         me.MediaEnded += new RoutedEventHandler(me_MediaEnded);
                     }
                 }
             }
+
+          
         }
     }
 }

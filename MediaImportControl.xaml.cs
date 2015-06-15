@@ -13,7 +13,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Collections.ObjectModel;
-
 using System.Collections.Specialized;
 using System.Reflection;
 using System.Diagnostics;
@@ -131,7 +130,7 @@ namespace RAPPTest
                 MediaView.InsertImages(lstMedia);
                 BindImages(mediaFolderId);
 
-                if(sb.Length > 0)
+                if (sb.Length > 0)
                     MessageBox.Show(sb.ToString());
             }
         }
@@ -157,10 +156,12 @@ namespace RAPPTest
                 MainWindow window = (MainWindow)Application.Current.MainWindow;
                 MediaView mv = new MediaView();
                 MediaObj = mv.GetAllMediaData(mediaFolderId);
+                lstImageGallery.ItemsSource = MediaObj;
+
                 if (window.tabControl.SelectedIndex == 1)
-                    window.dndPanelImport.lstImageGallery.ItemsSource = MediaObj;
-                else if (window.tabControl.SelectedIndex == 2)
                     window.dndPanel.lstImageGallery.ItemsSource = MediaObj;
+                else if (window.tabControl.SelectedIndex == 2)
+                    window.dndPanelImport.lstImageGallery.ItemsSource = MediaObj;
             }
             catch (Exception ex)
             {
@@ -168,6 +169,24 @@ namespace RAPPTest
             }
         }
 
+
+        private childItem FindVisualChild<childItem>(DependencyObject obj)
+                    where childItem : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                if (child != null && child is childItem)
+                    return (childItem)child;
+                else
+                {
+                    childItem childOfChild = FindVisualChild<childItem>(child);
+                    if (childOfChild != null)
+                        return childOfChild;
+                }
+            }
+            return null;
+        }
 
         /// <summary>
         /// this event is called when user clicks on the image thumbnail and shows script tab.
@@ -181,9 +200,7 @@ namespace RAPPTest
             Guid mediaId = ((Media)(item.SelectedItems[0])).MediaId;
             GetMediaByMediaId(mediaId);
             window.tabControl.SelectedIndex = 3;
-            e.Handled = true;
         }
-
 
         /// <summary>
         /// 
@@ -192,6 +209,7 @@ namespace RAPPTest
         /// <param name="e"></param>
         private void lstImageGallery_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            lstImageGallery.SelectionMode = SelectionMode.Single;
             MainWindow window = (MainWindow)Application.Current.MainWindow;
             ListBox item = (ListBox)sender;
             if (item.SelectedItems.Count > 0)

@@ -76,7 +76,7 @@ namespace RAPPTest
         /// </summary>
         public ObservableCollection<Media> _mediaList = new ObservableCollection<Media>();
 
-        private static string[] _imageFormats = new string[] { ".bmp", ".gif", ".jpg", ".jpeg", ".tif" };
+        private static string[] _imageFormats = new string[] { ".bmp", ".gif", ".jpg", ".jpeg", ".tif", ".png" };
         private static string[] _videoFormats = new string[] { ".avi", ".flv", ".mov", ".mp4", ".mpg", ".wmv" };
 
         #endregion

@@ -24,6 +24,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Windows.Controls.Primitives;
+using System.ComponentModel;
 
 namespace RAPPTest
 {
@@ -36,10 +37,9 @@ namespace RAPPTest
         #region Member Variables
 
         private Label _openFolder = null;
-        private Button _selectedButton = null;
+        public Button _selectedButton = null;
         private TabItem _lastSelectedTabItem = null;
         #endregion
-
 
         #region Static Variables
 
@@ -64,8 +64,11 @@ namespace RAPPTest
             LoadScreenSaverControl();
             CreateUpperGridButtons();
             CreateLowerGridButtons();
+            LoadImageBucket();
             expBrowser.NavigationTarget = ShellFileSystemFolder.FromFolderPath("C:\\");
             _lastSelectedTabItem = (TabItem)this.tabControl.SelectedItem;
+            _selectedButton.Background = Brushes.Purple;
+            _selectedButton.Foreground = Brushes.Yellow;
         }
 
         #endregion
@@ -310,31 +313,59 @@ namespace RAPPTest
                 ShowScreenSaver();
             }
         }
-
+        
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_lastSelectedTabItem == this.tabControl.SelectedItem)
+                return;
+            
             if (_lastSelectedTabItem != null && lblMediaFolderId.Content != null)
             {
                 SaveDetails();
+                ResetTabIndex();
             }
 
             _lastSelectedTabItem = this.tabControl.SelectedItem as TabItem;
+
+            if (this.tabControl.SelectedIndex == 1)
+                this.activeBtnScript.Foreground = Brushes.Yellow;
+            if (this.tabControl.SelectedIndex == 2)
+                this.activeBtnImport.Foreground = Brushes.Yellow;
+        }
+
+        private void ResetTabIndex()
+        {
+            txtTitleOrganizer.TabIndex = 0;
+            txtDescriptionOrganizer.TabIndex = 1;
+            btnMoreDataOrganizer.TabIndex = 2;
+            txtNotesOrganizer.TabIndex = 3;
+            txtTitle.TabIndex = 0;
+            txtDescription.TabIndex = 1;
+            btnMoreData.TabIndex = 2;
+            txtNotes.TabIndex = 3;
+        }
+
+        private void LoadImageBucket()
+        {
+            MediaView mv = new MediaView();
+            ObservableCollection<Media> mediaObj = mv.GetAllImages();
+            mediaListBox.ItemsSource = mediaObj;
+            mediaListBox.Tag = mv.GetImageBucketItemCount(mediaObj);
         }
 
         private void ImagebucketTab_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            //binding all media files on the image bucket tab UI.
-            try
-            {
-                MediaView mv = new MediaView();
-                ObservableCollection<Media> mediaObj = mv.GetAllImages();
-                mediaListBox.ItemsSource = mediaObj;
-                mediaListBox.Tag = mv.GetImageBucketItemCount(mediaObj);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            //try
+            //{
+            //    MediaView mv = new MediaView();
+            //    ObservableCollection<Media> mediaObj = mv.GetAllImages();
+            //    mediaListBox.ItemsSource = mediaObj;
+            //    mediaListBox.Tag = mv.GetImageBucketItemCount(mediaObj);
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new Exception(ex.Message);
+            //}
         }
 
         private void btn_Click(object sender, RoutedEventArgs e)
@@ -359,8 +390,8 @@ namespace RAPPTest
                     _selectedButton = btn;
                 }
 
-                _selectedButton.Background = Brushes.Purple;
-                _selectedButton.Foreground = Brushes.Yellow;
+               // _selectedButton.Background = Brushes.Purple;
+               // _selectedButton.Foreground = Brushes.Yellow;
                 Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
                 //binding images after fetching them from the database by providing media folder id
                 GetMediaFolderID(Convert.ToInt32(_openFolder.Content.ToString()), _selectedButton.Content.ToString());
@@ -474,7 +505,7 @@ namespace RAPPTest
         }
 
         private void MoveImagestoDatabaseFromExplorer(DataObject data, Guid mediaFolderId, bool isSameFolder)
-        { 
+        {
             //adding images to database after dropping them to the grid.
             StringBuilder sb = new StringBuilder();
             MainWindow window = (MainWindow)Application.Current.MainWindow;
@@ -542,32 +573,94 @@ namespace RAPPTest
 
         private void iconZoomOut_MouseUp(object sender, RoutedEventArgs e)
         {
-            //chaning size of each image by looping through the list
-            for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+            if (this.tabControl.SelectedIndex == 2)
             {
-                ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
-                lbi.Width = 100;
+                //chaning size of each image by looping through the list
+                for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+                {
+                    ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
+                    ChangeImageSize(80, 100, lbi);
+                }
             }
+            if (this.tabControl.SelectedIndex == 1)
+            {
+                for (int i = 0; i < dndPanel.lstImageGallery.Items.Count; i++)
+                {
+                    //chaning size of each image by looping through the list
+                    ListBoxItem lbi = (ListBoxItem)dndPanel.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanel.lstImageGallery.Items[i]);
+                    ChangeImageSize(80, 100, lbi);
+                }
+            }
+        }
+
+        public void ChangeImageSize(int height, int width, ListBoxItem lbi)
+        {
+            ContentPresenter myContentPresenter = FindVisualChild<ContentPresenter>(lbi);
+            DataTemplate myDataTemplate = myContentPresenter.ContentTemplate;
+            Image img = (Image)myDataTemplate.FindName("imgMedia", myContentPresenter);
+            BitmapImage imgSource = (BitmapImage)img.Source;
+            img.Height = height;
+            img.Width = width;
+        }
+
+        private childItem FindVisualChild<childItem>(DependencyObject obj)
+                    where childItem : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                if (child != null && child is childItem)
+                    return (childItem)child;
+                else
+                {
+                    childItem childOfChild = FindVisualChild<childItem>(child);
+                    if (childOfChild != null)
+                        return childOfChild;
+                }
+            }
+            return null;
         }
 
         private void iconZoomIn_MouseUp(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+            if (this.tabControl.SelectedIndex == 2)
             {
-                //chaning size of each image by looping through the list
-                ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
-                lbi.Width = 120;
+                for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+                {
+                    //chaning size of each image by looping through the list
+                    ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
+                    ChangeImageSize(100, 120, lbi);
+                }
+            } if (this.tabControl.SelectedIndex == 1)
+            {
+                for (int i = 0; i < dndPanel.lstImageGallery.Items.Count; i++)
+                {
+                    //chaning size of each image by looping through the list
+                    ListBoxItem lbi = (ListBoxItem)dndPanel.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanel.lstImageGallery.Items[i]);
+                    ChangeImageSize(100, 120, lbi);
+                }
             }
         }
 
         private void iconZoomMax_MouseUp(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+            if (this.tabControl.SelectedIndex == 2)
             {
-                //chaning size of each image by looping through the list
-                ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
-                lbi.Width = 130;
-                lbi.Height = 130;
+                for (int i = 0; i < dndPanelImport.lstImageGallery.Items.Count; i++)
+                {
+                    //chaning size of each image by looping through the list
+                    ListBoxItem lbi = (ListBoxItem)dndPanelImport.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanelImport.lstImageGallery.Items[i]);
+                    ChangeImageSize(120, 140, lbi);
+                }
+            } 
+            if (this.tabControl.SelectedIndex == 1)
+            {
+                for (int i = 0; i < dndPanel.lstImageGallery.Items.Count; i++)
+                {
+                    //chaning size of each image by looping through the list
+                    ListBoxItem lbi = (ListBoxItem)dndPanel.lstImageGallery.ItemContainerGenerator.ContainerFromItem(dndPanel.lstImageGallery.Items[i]);
+                    ChangeImageSize(120, 140, lbi);
+                }
             }
         }
 
@@ -602,7 +695,7 @@ namespace RAPPTest
             mv.GetAllMediaData((Guid)lblMediaFolderId.Content);
         }
 
-        private void SaveDetails()         
+        private void SaveDetails()
         {
             if (_lastSelectedTabItem.Header.ToString() == "Import")
             {
@@ -626,7 +719,7 @@ namespace RAPPTest
 
             Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
             int sequence = 0;
-            MediaImportControl mic = dndPanelImport;
+            MediaImportControl mic = dndPanel;
 
             if (lblScriptMediaId.Content != null)
             {
@@ -660,7 +753,7 @@ namespace RAPPTest
 
             Guid mediaFolderId = (Guid)lblMediaFolderId.Content;
             int sequence = 0;
-            MediaImportControl mic = dndPanelImport;
+            MediaImportControl mic = dndPanel;
             foreach (Media item in mic.lstImageGallery.Items)
             {
                 sequence++;
@@ -675,14 +768,13 @@ namespace RAPPTest
             //binding list again.
             mic.BindImages(mediaFolderId);
             UpdateMediaFolderTitle(mediaFolderId, txtImportHeader.Text);
-          
         }
 
 
         private void UpdateMediaFolderTitle(Guid mediaFolderId, string title)
         {
             MediaView mv = new MediaView();
-            mv.UpdateMediaFolderTitle(mediaFolderId, title);           
+            mv.UpdateMediaFolderTitle(mediaFolderId, title);
             txtImportHeader.Text = title;
             txtScriptHeader.Text = title;
             txtOrganizerHeader.Text = title;
@@ -695,7 +787,7 @@ namespace RAPPTest
         /// <param name="e"></param>
         private void folder_MouseUp(object sender, MouseButtonEventArgs e)
         {
-           
+
             //styling folder buttons when clicked
             Label clickedFolder = sender as Label;
             if (clickedFolder != null)
@@ -712,6 +804,10 @@ namespace RAPPTest
                     _openFolder.Background = this.FindResource("closedFolderIcon") as ImageBrush;
                     _openFolder.Foreground = this.FindResource("Purple") as SolidColorBrush;
                     _openFolder = clickedFolder;
+                    _selectedButton.Background = Brushes.Purple;
+                    _selectedButton.Foreground = Brushes.Yellow;
+                    activeBtnImport.Background = Brushes.Purple;
+                    activeBtnImport.Foreground = Brushes.Yellow;
                 }
 
 
@@ -720,27 +816,27 @@ namespace RAPPTest
                 MediaImportControl ic = new MediaImportControl();
                 ic.BindImages((Guid)lblMediaFolderId.Content);
 
-                if (this.tabControl.SelectedIndex == 4)
-                {
-                    int folderNum = Convert.ToInt32(_openFolder.Content.ToString());
-                    ObservableCollection<ImageBucket> lstBucket = (ObservableCollection<ImageBucket>)mediaListBox.Tag;
-                    var query = from m in lstBucket
-                                where m.FolderNum <= folderNum
-                                select m;
-                    double sumOffSet = 0;
+                //if (this.tabControl.SelectedIndex == 4)
+                //{
+                //    int folderNum = Convert.ToInt32(_openFolder.Content.ToString());
+                //    ObservableCollection<ImageBucket> lstBucket = (ObservableCollection<ImageBucket>)mediaListBox.Tag;
+                //    var query = from m in lstBucket
+                //                where m.FolderNum <= folderNum
+                //                select m;
+                //    double sumOffSet = 0;
 
-                    if (folderNum == 1)
-                        sumOffSet = 0;
-                    else if (folderNum == 9)
-                        sumOffSet = imgBucketScrollView.MaxHeight;
-                    else
-                        sumOffSet = lstBucket.Where(l => l.FolderNum <= folderNum).Sum(l => l.Percentage);
+                //    if (folderNum == 1)
+                //        sumOffSet = 0;
+                //    else if (folderNum == 9)
+                //        sumOffSet = mediaListBox.S.MaxHeight;
+                //    else
+                //        sumOffSet = lstBucket.Where(l => l.FolderNum <= folderNum).Sum(l => l.Percentage);
 
-                    imgBucketScrollView.ScrollToVerticalOffset(sumOffSet);
-                }
+                //    imgBucketScrollView.ScrollToVerticalOffset(sumOffSet);
+                //}
 
                 if (this.tabControl.SelectedIndex == 3)
-                    this.tabControl.SelectedIndex = 2;
+                    this.tabControl.SelectedIndex = 1;
 
 
                 lblScriptMediaId.Content = null;
@@ -814,5 +910,11 @@ namespace RAPPTest
         }
 
         #endregion
+
+        private void mediaListBox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            //mediaListBox.ScrollIntoView(mediaListBox.SelectedItem);
+            //((ListBoxItem)sender).Focus();
+        }
     }
 }

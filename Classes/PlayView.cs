@@ -65,16 +65,6 @@ namespace RAPPTest
                 ScreenSaver._screenSaverWindow.isOpen = false;
             }
 
-            if (e.Key == System.Windows.Input.Key.Up)
-            {
-                PauseVideo();
-            }
-
-            if (e.Key == System.Windows.Input.Key.Down)
-            {
-                PlayVideo();
-            }
-
             if (e.Key == System.Windows.Input.Key.Space)
             {
                 //show description
@@ -91,7 +81,7 @@ namespace RAPPTest
                         FieldInfo stateField = helperObject.GetType().GetField("_currentState", BindingFlags.NonPublic | BindingFlags.Instance);
                         MediaState state = (MediaState)stateField.GetValue(helperObject);
                         if (state == MediaState.Pause) 
-                        {
+                        {                    
                             me.Play();
                         }
                         else if (state == MediaState.Play)
@@ -99,8 +89,10 @@ namespace RAPPTest
                             me.Pause();
                         }
                     }
+                    else
+                        this.getWPFWindow.SetViewboxContent(this.getMedia); 
                 }
-                //this.getWPFWindow.SetViewboxContent(this.getMedia);
+                     
             }
 
            
@@ -121,11 +113,15 @@ namespace RAPPTest
 
         private void KeyUp0_9(object sender, KeyEventArgs e)
         {
-            if (e.Key >= System.Windows.Input.Key.D1 && e.Key <= System.Windows.Input.Key.D9)
+            if ((e.Key >= System.Windows.Input.Key.D1 && e.Key <= System.Windows.Input.Key.D9) || (e.Key >=  System.Windows.Input.Key.NumPad0 && e.Key <=  System.Windows.Input.Key.NumPad9))
             {
                 //checking if any key between 0 and 9 is pressed
                 StopVideo();
-                string folderName = e.Key.ToString().Substring(1, 1);
+                string folderName = string.Empty;
+                if (e.Key >= System.Windows.Input.Key.D1 && e.Key <= System.Windows.Input.Key.D9)
+                    folderName = e.Key.ToString().Substring(1, 1);
+                else if (e.Key >= System.Windows.Input.Key.NumPad0 && e.Key <= System.Windows.Input.Key.NumPad9)
+                    folderName = e.Key.ToString().Replace("NumPad", string.Empty);
                 this.PerformFolderChange(folderName);
                 this.getWPFWindow.SetFolderName(folderName);
                 this.getWPFWindow.SetViewboxContent(folderName + " ");
@@ -557,7 +553,7 @@ namespace RAPPTest
                     indexCanvas.Height = indexCanvas.ActualHeight / scale.ScaleY;
                     titleTextBlock.Padding = new Thickness(0, 0, 0, 0); //titleTextBlock is title
 
-                    titleDescCanvas.Width = (indexCanvas.ActualWidth * 3);// (scale.ScaleX + scale.ScaleY);
+                    titleDescCanvas.Width = indexCanvas.ActualWidth * 7;// (scale.ScaleX + scale.ScaleY);
                     titleDescCanvas.Height = indexCanvas.ActualHeight / scale.ScaleY;
 
                     descTextBlock.Padding = new Thickness(5, indexCanvas.Height, 0, 0); //descTextBlock is description

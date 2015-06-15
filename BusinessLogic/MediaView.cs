@@ -168,6 +168,7 @@ namespace RAPPTest
                 var query = from m in rappEntity.Media
                             join mf in rappEntity.MediaFolders
                             on m.MediaFolderId equals mf.MediaFolderId
+                            orderby m.Sequence
                             select new Media
                             {
                                 FileName = m.FileName,
@@ -204,6 +205,7 @@ namespace RAPPTest
                             join mf in rappEntity.MediaFolders
                             on m.MediaFolderId equals mf.MediaFolderId
                             where mf.FolderNum == number
+                            orderby m.Sequence
                             select new Media
                             {
                                 FileName = m.FileName,
@@ -269,6 +271,11 @@ namespace RAPPTest
                 var media = (from m in rapp.Media
                              where m.MediaId == mediaId
                              select m).First();
+
+                string fileName = media.FileName;                
+                string appDirectory = System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+                string filePath = appDirectory + "\\Media\\" + fileName;
+                string fileThumbnailPath = appDirectory + "\\Media\\Thumbnails\\" + fileName;
 
 
                 rapp.Media.DeleteObject(media);
